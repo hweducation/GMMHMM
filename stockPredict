@@ -1,0 +1,50 @@
+import datetime
+import numpy as np
+import pandas as pd
+from matplotlib import cm, pyplot as plt
+from hmmlearn.hmm import GaussianHMM
+#数据处理
+df = pd.read_excel("C://Users/WANG/PycharmProjects/GMMHMM/SH.xlsx", header=0)
+print("原始数据的大小：", df.shape)
+print("原始数据的列名", df.columns)
+df['日期'] = pd.to_datetime(df['日期'])
+df.reset_index(inplace=True, drop=False)
+df.drop(['index','交易日期','开盘价','最高价','最低价' ,'市值', '换手率', 'pe', 'pb'], axis=1, inplace=True)
+df['日期'] = df['日期'].apply(datetime.datetime.toordinal)
+print(df.head())
+dates = df['日期'][1:]
+close_v = df['收盘价']
+volume = df['成交量'][1:]
+diff = np.diff(close_v)
+#获得输入数据
+X = np.column_stack([diff, volume])
+print("输入数据的大小：", X.shape)   #(1504, 2)
+
+
+
+#异常值的处理
+min = X.mean(axis=0)[0] - 8*X.std(axis=0)[0]   #最小值
+max = X.mean(axis=0)[0] + 8*X.std(axis=0)[0]  #最大值
+X = pd.DataFrame(X)
+#异常值设为均值
+for i in range(len(X)):  #dataframe的遍历
+    if (X.loc[i, 0]< min) | (X.loc[i, 0] > max):
+            X.loc[i, 0] = X.mean(axis=0)[0]
+
+
+#模型的构建
+#数据集的划分
+X_Test = X.iloc[:-30]
+X_Pre = X.iloc[-30:]
+print("训练集的大小：", X_Test.shape)     #(41, 2)
+print("测试集的大小：", X_Pre.shape)      #(30, 2)
+#模型的搭建
+model = GaussianHMM(n_components=3, covariance_type='diag', n_iter=1000)
+model.fit(X_Test)
+print("隐藏状态的个数", model.n_components)  #
+print("均值矩阵")
+print(model.means_)
+print("协方差矩阵")
+print(model.covars_)
+print("状态转移矩阵--A")
+print(model.transmat_)
