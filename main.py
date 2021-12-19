@@ -37,7 +37,8 @@ time_RB = point(1111, 665)
 #           'Project77-70 Recording18','Project77-70 Recording25','Project77-70 Recording26',
 #           'Project77-70 Recording31','Project77-70 Recording46','Project77-70 Recording70']
 filename_list = ['Project77-70 Recording46','Project77-70 Recording70']
-X_all = []
+X_sum = []#三维
+X_all = []#二维
 pre_means_all = []
 pre_covs_all = []
 lengths = []
@@ -48,7 +49,7 @@ for filename in filename_list:
     print(in_dir)
     df = pd.read_csv(in_dir, sep='\t', header=0)
 
-    component_num = 7 #隐藏状态数目
+    component_num = 12 #隐藏状态数目
 
     print("原始数据的大小：", df.shape)
     #print("原始数据的列名", df.columns)
@@ -216,6 +217,7 @@ for filename in filename_list:
     pre_covs_ = np.array(pre_covs_)
     #X 接在X_all后面
     X_all += X
+    X_sum.append(X)#三维数组，目的是后期根据观测序列运行Viterbi
     #多序列的均值和方差如何设置
     # pre_means_all+=pre_means_
     # pre_means_all.append(pre_means_)
@@ -236,7 +238,8 @@ print(X_all)
 print("lengths")
 print(lengths)
 
-
+print("X_sum")
+print(X_sum)
 model = GaussianHMM(n_components=component_num, covariance_type='full', n_iter=1000, init_params='st') #'stmcw'
 # model.means_ = pre_means_all #赋值初始矩阵
 #
@@ -257,9 +260,13 @@ print("协方差矩阵")
 print(model.covars_)
 print("状态转移矩阵--A")
 print(model.transmat_)
-# state_sequence = model.predict(X_all, lengths=None)
-# print("state_sequence")
-# print(state_sequence) #预测最可能的隐藏状态
+#拟合观测序列
+O_seq = np.array(X_sum[0])
+print("O_seq")
+print(O_seq)
+state_sequence = model.predict(O_seq, lengths=None)
+print("state_sequence")
+print(state_sequence) #预测最可能的隐藏状态
 # print("predict_proba")
 # pp = model.predict_proba(X_all)
 # print(pp)
