@@ -5,8 +5,12 @@ import cv2
 import math
 import numpy as np
 import pandas as pd
+
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+
 from matplotlib import cm, pyplot as plt
-from hmmlearn.hmm import GaussianHMM
+from hmmlearn.hmm import *
 #数学后测4
 diagram_LU = point(635, 57)
 diagram_RB = point(1265, 557)
@@ -42,6 +46,56 @@ X_all = []#二维
 pre_means_all = []
 pre_covs_all = []
 lengths = []
+def make_ellipses(mean, cov, ax, confidence=5.991, alpha=0.3, color="blue", eigv=False, arrow_color_list=None):
+    """
+    多元正态分布
+    mean: 均值
+    cov: 协方差矩阵
+    ax: 画布的Axes对象
+    confidence: 置信椭圆置信率 # 置信区间， 95%： 5.991  99%： 9.21  90%： 4.605
+    alpha: 椭圆透明度
+    eigv: 是否画特征向量
+    arrow_color_list: 箭头颜色列表
+    """
+    lambda_, v = np.linalg.eig(cov)    # 计算特征值lambda_和特征向量v
+    # print "lambda: ", lambda_
+    # print "v: ", v
+    # print "v[0, 0]: ", v[0, 0]
+
+    sqrt_lambda = np.sqrt(np.abs(lambda_))    # 存在负的特征值， 无法开方，取绝对值
+
+    s = confidence
+    width = 2 * np.sqrt(s) * sqrt_lambda[0]    # 计算椭圆的两倍长轴
+    height = 2 * np.sqrt(s) * sqrt_lambda[1]   # 计算椭圆的两倍短轴
+    angle = np.rad2deg(np.arccos(v[0, 0]))    # 计算椭圆的旋转角度
+    ell = mpl.patches.Ellipse(xy=mean, width=width, height=height, angle=angle, color=color)    # 绘制椭圆
+
+    ax.add_artist(ell)
+    ell.set_alpha(alpha)
+    # 是否画出特征向量
+    if eigv:
+        # print "type(v): ", type(v)
+        if arrow_color_list is None:
+            arrow_color_list = [color for i in range(v.shape[0])]
+        for i in range(v.shape[0]):
+            v_i = v[:, i]
+            scale_variable = np.sqrt(s) * sqrt_lambda[i]
+            # 绘制箭头
+            """
+            ax.arrow(x, y, dx, dy,    # (x, y)为箭头起始坐标，(dx, dy)为偏移量
+                     width,    # 箭头尾部线段宽度
+                     length_includes_head,    # 长度是否包含箭头
+                     head_width,    # 箭头宽度
+                     head_length,    # 箭头长度
+                     color,    # 箭头颜色
+                     )
+            """
+            ax.arrow(mean[0], mean[1], scale_variable*v_i[0], scale_variable * v_i[1],
+                     width=0.05,
+                     length_includes_head=True,
+                     head_width=0.2,
+                     head_length=0.3,
+                     color=arrow_color_list[i])
 #'Project63-57 Recording63',
 for filename in filename_list:
     in_dir='E://read-allquestion/hou_shu_01/'+filename+'.tsv'
@@ -49,8 +103,8 @@ for filename in filename_list:
     print(in_dir)
     df = pd.read_csv(in_dir, sep='\t', header=0)
 
-    component_num = 12 #隐藏状态数目
-
+    component_num = 7 #隐藏状态数目
+    mix_num = 5
     print("原始数据的大小：", df.shape)
     #print("原始数据的列名", df.columns)
 
@@ -240,7 +294,26 @@ print(lengths)
 
 print("X_sum")
 print(X_sum)
-model = GaussianHMM(n_components=component_num, covariance_type='full', n_iter=1000, init_params='st') #'stmcw'
+#model = GaussianHMM(n_components=component_num, covariance_type='full', n_iter=1000) #'stmcw', init_params='stmc'
+
+model = GMMHMM(n_components=component_num, n_mix=mix_num, covariance_type='full', n_iter=1)  # , init_params='stmcw''stmcw'
+
+# #在迭代过程中将点归回预先定义的AOI中
+# for i in range(1000):#迭代次数
+#     model = GMMHMM(n_components=component_num, n_mix=mix_num, covariance_type='full', n_iter=1, init_params='stmcw') #'stmcw'
+#
+#     model.fit(X_all, lengths)  # 拟合函数
+#     #
+#     print("均值矩阵")
+#     print(model.means_)
+#
+#     for i in range(component_num):#一共7个状态
+#         for j in range(mix_num):#一共5个混合成分
+#             # x_y = (model.means_[i][0], model.means_[i][1])
+#             if model.means_[i][j][0]
+#                 model.means_[i][j][1]
+#     print("end")
+
 # model.means_ = pre_means_all #赋值初始矩阵
 #
 # # print("model.means_")
@@ -260,6 +333,8 @@ print("协方差矩阵")
 print(model.covars_)
 print("状态转移矩阵--A")
 print(model.transmat_)
+
+
 #拟合观测序列
 O_seq = np.array(X_sum[0])
 print("O_seq")
@@ -267,6 +342,25 @@ print(O_seq)
 state_sequence = model.predict(O_seq, lengths=None)
 print("state_sequence")
 print(state_sequence) #预测最可能的隐藏状态
+
+np.savetxt('out/state_sequence.txt', state_sequence, fmt="%.3f", delimiter=',') #保存为3位小数的浮点数，用逗号分隔
+
+print("predict_proba")
+posterior_probability = model.predict_proba(O_seq, lengths=None)
+print(posterior_probability)
+np.savetxt('out/predict_proba.txt', posterior_probability, fmt="%.3f", delimiter=',') #保存为3位小数的浮点数，用逗号分隔
+
+#计算信息熵
+# shang = 0
+# for row in posterior_probability:
+#     for cell in row:
+#         if cell!= 0:
+#             shang += -cell*np.log(cell)
+#         # posterior_probability[0]
+# print("shang")
+# print(shang)
+
+
 # print("predict_proba")
 # pp = model.predict_proba(X_all)
 # print(pp)
@@ -283,9 +377,33 @@ target_file = 'out/all.png'
 orin_img = cv2.imread(in_file)
 img = cv2.resize(orin_img, (1920, 1080))
 
+
+# # 单高斯输出图片
+# for i in range(component_num):
+#         #x_y = (model.means_[i][0], model.means_[i][1])
+#         cv2.circle(img, (int(model.means_[i][0]), int(model.means_[i][1])), 5, (0, 0, 255), -1)
+#         cv2.putText(img, str(i), (int(model.means_[i][0]), int(model.means_[i][1])), cv2.FONT_ITALIC, 0.9, (210, 50, 220), 2, cv2.LINE_AA)
+
+
+#高斯混合输出图片
 for i in range(component_num):
-    x_y = (model.means_[i][0], model.means_[i][1])
-    cv2.circle(img, (int(model.means_[i][0]), int(model.means_[i][1])), 5, (0, 0, 255), -1)
-    cv2.putText(img, str(i), (int(model.means_[i][0]), int(model.means_[i][1])), cv2.FONT_ITALIC, 0.9, (210, 50, 220), 2, cv2.LINE_AA)
+    for j in range(mix_num):
+        #x_y = (model.means_[i][0], model.means_[i][1])
+        cv2.circle(img, (int(model.means_[i][j][0]), int(model.means_[i][j][1])), 5, (0, 0, 255), -1)
+        cv2.putText(img, str(i), (int(model.means_[i][j][0]), int(model.means_[i][j][1])), cv2.FONT_ITALIC, 0.9, (210, 50, 220), 2, cv2.LINE_AA)
 
 cv2.imwrite(target_file, img)
+
+# #需要归一化
+# plt.rcParams["figure.figsize"] = (1.0, 1.0)
+# fig, ax = plt.subplots()
+# ax.set_xlabel("x")
+# ax.set_ylabel("y")
+# confidence = 5.991
+# color = "blue"
+# alpha = 0.3
+# eigv = False
+# make_ellipses(model.means_, model.covars_, ax, confidence=confidence, color=color, alpha=alpha, eigv=eigv)
+#
+# plt.savefig("/out/gaussian_covariance_matrix.png")
+# #plt.show()
