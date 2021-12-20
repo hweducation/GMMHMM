@@ -117,8 +117,8 @@ for filename in filename_list:
     gazeY = df['Gaze point Y [MCS px]']
 
 
-    #获得输入数据
-    X = np.column_stack([gazeX, gazeY])
+    #获得输入数据,数据归一化
+    X = np.column_stack([gazeX/1920, gazeY/1080])
     print("输入数据的大小：", X.shape)   #(1504, 2)
     #清洗数据，删掉超出屏幕范围的数据
     X_clear = []
@@ -139,6 +139,8 @@ for filename in filename_list:
 
     #用手动划分的AOI 初始化均值和协方差
     def in_which_AOI2(x,y) :#Statement合并
+        x = x*1920
+        y = y*1080
         if x >= diagram_LU.x and x <= diagram_RB.x and y >= diagram_LU.y and y <= diagram_RB.y:
             return 0
         elif x >= optionA_LU.x and x <= optionA_RB.x and y >= optionA_LU.y and y <= optionA_RB.y:
@@ -294,9 +296,9 @@ print(lengths)
 
 print("X_sum")
 print(X_sum)
-#model = GaussianHMM(n_components=component_num, covariance_type='full', n_iter=1000) #'stmcw', init_params='stmc'
+model = GaussianHMM(n_components=component_num, covariance_type='full', n_iter=1000) #'stmcw', init_params='stmc'
 
-model = GMMHMM(n_components=component_num, n_mix=mix_num, covariance_type='full', n_iter=1)  # , init_params='stmcw''stmcw'
+#model = GMMHMM(n_components=component_num, n_mix=mix_num, covariance_type='full', n_iter=1)  # , init_params='stmcw''stmcw'
 
 # #在迭代过程中将点归回预先定义的AOI中
 # for i in range(1000):#迭代次数
@@ -378,32 +380,34 @@ orin_img = cv2.imread(in_file)
 img = cv2.resize(orin_img, (1920, 1080))
 
 
-# # 单高斯输出图片
-# for i in range(component_num):
-#         #x_y = (model.means_[i][0], model.means_[i][1])
-#         cv2.circle(img, (int(model.means_[i][0]), int(model.means_[i][1])), 5, (0, 0, 255), -1)
-#         cv2.putText(img, str(i), (int(model.means_[i][0]), int(model.means_[i][1])), cv2.FONT_ITALIC, 0.9, (210, 50, 220), 2, cv2.LINE_AA)
-
-
-#高斯混合输出图片
+# 单高斯输出图片
 for i in range(component_num):
-    for j in range(mix_num):
         #x_y = (model.means_[i][0], model.means_[i][1])
-        cv2.circle(img, (int(model.means_[i][j][0]), int(model.means_[i][j][1])), 5, (0, 0, 255), -1)
-        cv2.putText(img, str(i), (int(model.means_[i][j][0]), int(model.means_[i][j][1])), cv2.FONT_ITALIC, 0.9, (210, 50, 220), 2, cv2.LINE_AA)
+        cv2.circle(img, (int(model.means_[i][0]*1920), int(model.means_[i][1]*1080)), 5, (0, 0, 255), -1)
+        cv2.putText(img, str(i), (int(model.means_[i][0]*1920), int(model.means_[i][1]*1080)), cv2.FONT_ITALIC, 0.9, (210, 50, 220), 2, cv2.LINE_AA)
+
+#
+# #高斯混合输出图片
+# for i in range(component_num):
+#     for j in range(mix_num):
+#         #x_y = (model.means_[i][0], model.means_[i][1])
+#         cv2.circle(img, (int(model.means_[i][j][0]*1920), int(model.means_[i][j][1]*1080)), 5, (0, 0, 255), -1)
+#         cv2.putText(img, str(i), (int(model.means_[i][j][0]*1920), int(model.means_[i][j][1]*1080)), cv2.FONT_ITALIC, 0.9, (210, 50, 220), 2, cv2.LINE_AA)
 
 cv2.imwrite(target_file, img)
 
-# #需要归一化
-# plt.rcParams["figure.figsize"] = (1.0, 1.0)
-# fig, ax = plt.subplots()
-# ax.set_xlabel("x")
-# ax.set_ylabel("y")
-# confidence = 5.991
-# color = "blue"
-# alpha = 0.3
-# eigv = False
-# make_ellipses(model.means_, model.covars_, ax, confidence=confidence, color=color, alpha=alpha, eigv=eigv)
-#
-# plt.savefig("/out/gaussian_covariance_matrix.png")
-# #plt.show()
+#需要归一化
+plt.rcParams["figure.figsize"] = (10.0, 10.0)
+fig, ax = plt.subplots()
+ax.set_xlabel("x")
+ax.set_ylabel("y")
+confidence = 5.991
+color = "blue"
+alpha = 0.3
+eigv = False
+for i in range(component_num):
+    make_ellipses(model.means_[i], model.covars_[i], ax, confidence=confidence, color=color, alpha=alpha, eigv=eigv)
+
+plt.savefig('out/gaussian_covariance_matrix.png')
+#plt.savefig("/out/gaussian_covariance_matrix.png")
+#plt.show()
