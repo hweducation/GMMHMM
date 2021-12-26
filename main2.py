@@ -149,7 +149,7 @@ def to_edge(x, y, index):  # 将跑出AOI的点归到边缘
 #将拟合后的均值画在原始背景图上面，设置一些路径等参数
 in_file = 'background.jpg'
 # target_file = 'out/'+filename+'.png'
-target_file1 = 'out/filemeansGMM-new5.png'
+target_file1 = 'out/filemeansGMM-new6.png'
 target_file2 = 'out/filemeansGMM-2.png'
 target_file3 = 'out/filemeansGMM-3.png'
 
@@ -221,7 +221,7 @@ def make_ellipses(mean, cov, ax, confidence=5.991, alpha=0.3, color="blue", eigv
 
 component_num = 7 #隐藏状态数目
 mix_num = 3
-iter_num = 6
+iter_num = 10
 
 for filename in filename_list:
     in_dir = 'E://read-allquestion/hou_shu_01/'+filename+'.tsv'
@@ -308,7 +308,19 @@ for filename in filename_list:
     mean_X0L=[mean_X0[0]-0.1, mean_X0[1]]
     mean_X0R=[mean_X0[0]+0.1, mean_X0[1]]
     mean_X0= [mean_X0,mean_X0L,mean_X0R]
-    print("均值X0")
+    # print("均值X0")
+    # print(mean_X0)
+    diagramx1 = np.random.randint(diagram_LU.x, diagram_RB.x)/width
+    diagramy1 = np.random.randint(diagram_LU.y, diagram_RB.y)/height
+    diagramx2 = np.random.randint(diagram_LU.x, diagram_RB.x)/width
+    diagramy2 = np.random.randint(diagram_LU.y, diagram_RB.y)/height
+    diagramx3 = np.random.randint(diagram_LU.x, diagram_RB.x)/width
+    diagramy3 = np.random.randint(diagram_LU.y, diagram_RB.y)/height
+    diagram1 = [diagramx1,diagramy1]
+    diagram2 = [diagramx2,diagramy2]
+    diagram3 = [diagramx3,diagramy3]
+    mean_X0 = [diagram1,diagram2,diagram3]
+    print("mean_X0")
     print(mean_X0)
 
 
@@ -319,7 +331,19 @@ for filename in filename_list:
     mean_X1L=[mean_X1[0]-0.1, mean_X1[1]]
     mean_X1R=[mean_X1[0]+0.1, mean_X1[1]]
     mean_X1= [mean_X1, mean_X1L, mean_X1R]
-    print("均值X1")
+    # print("均值X1")
+    # print(mean_X1)
+    optionAx1 = np.random.randint(optionA_LU.x, optionA_RB.x)/width
+    optionAy1 = np.random.randint(optionA_LU.y, optionA_RB.y)/height
+    optionAx2 = np.random.randint(optionA_LU.x, optionA_RB.x)/width
+    optionAy2 = np.random.randint(optionA_LU.y, optionA_RB.y)/height
+    optionAx3 = np.random.randint(optionA_LU.x, optionA_RB.x)/width
+    optionAy3 = np.random.randint(optionA_LU.y, optionA_RB.y)/height
+    optionA1 = [optionAx1,optionAy1]
+    optionA2 = [optionAx2,optionAy2]
+    optionA3 = [optionAx3,optionAy3]
+    mean_X1 = [optionA1,optionA2,optionA3]
+    print("mean_X1")
     print(mean_X1)
 
 
@@ -330,7 +354,19 @@ for filename in filename_list:
     mean_X2L=[mean_X2[0]-0.1, mean_X2[1]]
     mean_X2R=[mean_X2[0]+0.1, mean_X2[1]]
     mean_X2= [mean_X2, mean_X2L, mean_X2R]
-    print("均值X2")
+    # print("均值X2")
+    # print(mean_X2)
+    optionBx1 = np.random.randint(optionB_LU.x, optionB_RB.x)/width
+    optionBy1 = np.random.randint(optionB_LU.y, optionB_RB.y)/height
+    optionBx2 = np.random.randint(optionB_LU.x, optionB_RB.x)/width
+    optionBy2 = np.random.randint(optionB_LU.y, optionB_RB.y)/height
+    optionBx3 = np.random.randint(optionB_LU.x, optionB_RB.x)/width
+    optionBy3 = np.random.randint(optionB_LU.y, optionB_RB.y)/height
+    optionB1 = [optionBx1,optionBy1]
+    optionB2 = [optionBx2,optionBy2]
+    optionB3 = [optionBx3,optionBy3]
+    mean_X2 = [optionB1,optionB2,optionB3]
+    print("mean_X2")
     print(mean_X2)
 
 
@@ -341,7 +377,19 @@ for filename in filename_list:
     mean_X3L=[mean_X3[0]-0.1, mean_X3[1]]
     mean_X3R=[mean_X3[0]+0.1, mean_X3[1]]
     mean_X3= [mean_X3, mean_X3L, mean_X3R]
-    print("均值X3")
+    # print("均值X3")
+    # print(mean_X3)
+    optionCx1 = np.random.randint(optionC_LU.x, optionC_RB.x)/width
+    optionCy1 = np.random.randint(optionC_LU.y, optionC_RB.y)/height
+    optionCx2 = np.random.randint(optionC_LU.x, optionC_RB.x)/width
+    optionCy2 = np.random.randint(optionC_LU.y, optionC_RB.y)/height
+    optionCx3 = np.random.randint(optionC_LU.x, optionC_RB.x)/width
+    optionCy3 = np.random.randint(optionC_LU.y, optionC_RB.y)/height
+    optionC1 = [optionCx1,optionCy1]
+    optionC2 = [optionCx2,optionCy2]
+    optionC3 = [optionCx3,optionCy3]
+    mean_X3 = [optionC1,optionC2,optionC3]
+    print("mean_X3")
     print(mean_X3)
 
 
@@ -352,8 +400,21 @@ for filename in filename_list:
     mean_X4L=[mean_X4[0]-0.1, mean_X4[1]]
     mean_X4R=[mean_X4[0]+0.1, mean_X4[1]]
     mean_X4= [mean_X4, mean_X4L, mean_X4R]
-    print("均值X4")
+    # print("均值X4")
+    # print(mean_X4)
+    optionDx1 = np.random.randint(optionD_LU.x, optionD_RB.x)/width
+    optionDy1 = np.random.randint(optionD_LU.y, optionD_RB.y)/height
+    optionDx2 = np.random.randint(optionD_LU.x, optionD_RB.x)/width
+    optionDy2 = np.random.randint(optionD_LU.y, optionD_RB.y)/height
+    optionDx3 = np.random.randint(optionD_LU.x, optionD_RB.x)/width
+    optionDy3 = np.random.randint(optionD_LU.y, optionD_RB.y)/height
+    optionD1 = [optionDx1,optionDy1]
+    optionD2 = [optionDx2,optionDy2]
+    optionD3 = [optionDx3,optionDy3]
+    mean_X4 = [optionD1,optionD2,optionD3]
+    print("mean_X4")
     print(mean_X4)
+
 
 
     cov_X5 = np.cov(X5.T)
@@ -363,8 +424,21 @@ for filename in filename_list:
     mean_X5L=[mean_X5[0]-0.1, mean_X5[1]]
     mean_X5R=[mean_X5[0]+0.1, mean_X5[1]]
     mean_X5= [mean_X5, mean_X5L, mean_X5R]
-    print("均值X5")
+    # print("均值X5")
+    # print(mean_X5)
+    stamentx1 = np.random.randint(stament_LU.x, stament_RB.x)/width
+    stamenty1 = np.random.randint(stament_LU.y, stament_RB.y)/height
+    stamentx2 = np.random.randint(stament_LU.x, stament_RB.x)/width
+    stamenty2 = np.random.randint(stament_LU.y, stament_RB.y)/height
+    stamentx3 = np.random.randint(stament_LU.x, stament_RB.x)/width
+    stamenty3 = np.random.randint(stament_LU.y, stament_RB.y)/height
+    stament1 = [stamentx1,stamenty1]
+    stament2 = [stamentx2,stamenty2]
+    stament3 = [stamentx3,stamenty3]
+    mean_X4 = [stament1,stament2,stament3]
+    print("mean_X5")
     print(mean_X5)
+
 
 
     cov_X6 = np.cov(X6.T)
@@ -374,7 +448,19 @@ for filename in filename_list:
     mean_X6L=[mean_X6[0]-0.1, mean_X6[1]]
     mean_X6R=[mean_X6[0]+0.1, mean_X6[1]]
     mean_X6= [mean_X6, mean_X6L, mean_X6R]
-    print("均值X6")
+    # print("均值X6")
+    # print(mean_X6)
+    timex1 = np.random.randint(time_LU.x, time_RB.x)/width
+    timey1 = np.random.randint(time_LU.y, time_RB.y)/height
+    timex2 = np.random.randint(time_LU.x, time_RB.x)/width
+    timey2 = np.random.randint(time_LU.y, time_RB.y)/height
+    timex3 = np.random.randint(time_LU.x, time_RB.x)/width
+    timey3 = np.random.randint(time_LU.y, time_RB.y)/height
+    time1 = [timex1,timey1]
+    time2 = [timex2,timey2]
+    time3 = [timex3,timey3]
+    mean_X6 = [time1,time2,time3]
+    print("mean_X6")
     print(mean_X6)
 
     # #异常值的处理
