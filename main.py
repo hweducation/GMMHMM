@@ -62,6 +62,7 @@
 #     else:
 #         return 7
 #
+#
 # def to_edge(x, y, index):  # 将跑出AOI的点归到边缘
 #     x = x * width
 #     y = y * height
@@ -73,9 +74,9 @@
 #         elif x > diagram_RB.x:
 #             new_x = diagram_RB.x
 #
-#         if y < diagram_LU.y:
+#         if y > diagram_LU.y:
 #             new_y = diagram_LU.y
-#         elif y > diagram_RB.y:
+#         elif y < diagram_RB.y:
 #             new_y = diagram_RB.y
 #     elif index == 1:
 #         if x < optionA_LU.x:
@@ -83,9 +84,9 @@
 #         elif x > optionA_RB.x:
 #             new_x = optionA_RB.x
 #
-#         if y < optionA_LU.y:
+#         if y > optionA_LU.y:
 #             new_y = optionA_LU.y
-#         elif y > optionA_RB.y:
+#         elif y < optionA_RB.y:
 #             new_y = optionA_RB.y
 #
 #     elif index == 2:
@@ -94,9 +95,9 @@
 #         elif x > optionB_RB.x:
 #             new_x = optionB_RB.x
 #
-#         if y < optionB_LU.y:
+#         if y > optionB_LU.y:
 #             new_y = optionB_LU.y
-#         elif y > optionB_RB.y:
+#         elif y < optionB_RB.y:
 #             new_y = optionB_RB.y
 #
 #     elif index == 3:
@@ -105,9 +106,9 @@
 #         elif x > optionC_RB.x:
 #             new_x = optionC_RB.x
 #
-#         if y < optionC_LU.y:
+#         if y > optionC_LU.y:
 #             new_y = optionC_LU.y
-#         elif y > optionC_RB.y:
+#         elif y < optionC_RB.y:
 #             new_y = optionC_RB.y
 #
 #     elif index == 4:
@@ -116,9 +117,9 @@
 #         elif x > optionD_RB.x:
 #             new_x = optionD_RB.x
 #
-#         if y < optionD_LU.y:
+#         if y > optionD_LU.y:
 #             new_y = optionD_LU.y
-#         elif y > optionD_RB.y:
+#         elif y < optionD_RB.y:
 #             new_y = optionD_RB.y
 #     elif index == 5:
 #         if x < stament_LU.x:
@@ -126,9 +127,9 @@
 #         elif x > stament_RB.x:
 #             new_x = stament_RB.x
 #
-#         if y < stament_LU.y:
+#         if y > stament_LU.y:
 #             new_y = stament_LU.y
-#         elif y > stament_RB.y:
+#         elif y < stament_RB.y:
 #             new_y = stament_RB.y
 #     elif index == 6:
 #         if x < time_LU.x:
@@ -136,9 +137,9 @@
 #         elif x > time_RB.x:
 #             new_x = time_RB.x
 #
-#         if y < time_LU.y:
+#         if y > time_LU.y:
 #             new_y = time_LU.y
-#         elif y > time_RB.y:
+#         elif y < time_RB.y:
 #             new_y = time_RB.y
 #     print("new_x")
 #     print(new_x)
@@ -149,7 +150,7 @@
 # #将拟合后的均值画在原始背景图上面，设置一些路径等参数
 # in_file = 'background.jpg'
 # # target_file = 'out/'+filename+'.png'
-# target_file1 = 'out/filemeans-new.png'
+# target_file1 = 'out/filemeans222.png'
 # target_file2 = 'out/filemeans-2.png'
 # target_file3 = 'out/filemeans-3.png'
 #
@@ -394,7 +395,7 @@
 #
 # print("X_sum")
 # print(X_sum)
-# model = GaussianHMM(n_components=component_num, covariance_type='full', n_iter=20, verbose=True, init_params='st') #'stmcw'
+# model = GaussianHMM(n_components=component_num, covariance_type='full', n_iter=5, verbose=True, init_params='st') #'stmcw'
 #
 # #给一个初值
 # model.means_ = pre_means_ #赋值初始均值矩阵
@@ -454,7 +455,7 @@
 #     new_cov = model.covars_#以前的原封不动的
 #
 #     new_means = np.array(new_means)#经过校正的
-#     model = GaussianHMM(n_components=component_num, covariance_type='full', n_iter=20, verbose=True,
+#     model = GaussianHMM(n_components=component_num, covariance_type='full', n_iter=5, verbose=True,
 #                 init_params='')  # 'stmcw'
 #
 #     model.startprob_ = new_sp

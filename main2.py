@@ -73,9 +73,9 @@ def to_edge(x, y, index):  # 将跑出AOI的点归到边缘
         elif x > diagram_RB.x:
             new_x = diagram_RB.x
 
-        if y < diagram_LU.y:
+        if y > diagram_LU.y:
             new_y = diagram_LU.y
-        elif y > diagram_RB.y:
+        elif y < diagram_RB.y:
             new_y = diagram_RB.y
     elif index == 1:
         if x < optionA_LU.x:
@@ -83,9 +83,9 @@ def to_edge(x, y, index):  # 将跑出AOI的点归到边缘
         elif x > optionA_RB.x:
             new_x = optionA_RB.x
 
-        if y < optionA_LU.y:
+        if y > optionA_LU.y:
             new_y = optionA_LU.y
-        elif y > optionA_RB.y:
+        elif y < optionA_RB.y:
             new_y = optionA_RB.y
 
     elif index == 2:
@@ -94,9 +94,9 @@ def to_edge(x, y, index):  # 将跑出AOI的点归到边缘
         elif x > optionB_RB.x:
             new_x = optionB_RB.x
 
-        if y < optionB_LU.y:
+        if y > optionB_LU.y:
             new_y = optionB_LU.y
-        elif y > optionB_RB.y:
+        elif y < optionB_RB.y:
             new_y = optionB_RB.y
 
     elif index == 3:
@@ -105,9 +105,9 @@ def to_edge(x, y, index):  # 将跑出AOI的点归到边缘
         elif x > optionC_RB.x:
             new_x = optionC_RB.x
 
-        if y < optionC_LU.y:
+        if y > optionC_LU.y:
             new_y = optionC_LU.y
-        elif y > optionC_RB.y:
+        elif y < optionC_RB.y:
             new_y = optionC_RB.y
 
     elif index == 4:
@@ -116,9 +116,9 @@ def to_edge(x, y, index):  # 将跑出AOI的点归到边缘
         elif x > optionD_RB.x:
             new_x = optionD_RB.x
 
-        if y < optionD_LU.y:
+        if y > optionD_LU.y:
             new_y = optionD_LU.y
-        elif y > optionD_RB.y:
+        elif y < optionD_RB.y:
             new_y = optionD_RB.y
     elif index == 5:
         if x < stament_LU.x:
@@ -126,9 +126,9 @@ def to_edge(x, y, index):  # 将跑出AOI的点归到边缘
         elif x > stament_RB.x:
             new_x = stament_RB.x
 
-        if y < stament_LU.y:
+        if y > stament_LU.y:
             new_y = stament_LU.y
-        elif y > stament_RB.y:
+        elif y < stament_RB.y:
             new_y = stament_RB.y
     elif index == 6:
         if x < time_LU.x:
@@ -136,9 +136,9 @@ def to_edge(x, y, index):  # 将跑出AOI的点归到边缘
         elif x > time_RB.x:
             new_x = time_RB.x
 
-        if y < time_LU.y:
+        if y > time_LU.y:
             new_y = time_LU.y
-        elif y > time_RB.y:
+        elif y < time_RB.y:
             new_y = time_RB.y
     print("new_x")
     print(new_x)
@@ -149,7 +149,7 @@ def to_edge(x, y, index):  # 将跑出AOI的点归到边缘
 #将拟合后的均值画在原始背景图上面，设置一些路径等参数
 in_file = 'background.jpg'
 # target_file = 'out/'+filename+'.png'
-target_file1 = 'out/filemeansGMM-new.png'
+target_file1 = 'out/filemeansGMM-new5.png'
 target_file2 = 'out/filemeansGMM-2.png'
 target_file3 = 'out/filemeansGMM-3.png'
 
@@ -218,14 +218,17 @@ def make_ellipses(mean, cov, ax, confidence=5.991, alpha=0.3, color="blue", eigv
                      head_length=0.3,
                      color=arrow_color_list[i])
 #'Project63-57 Recording63',
+
+component_num = 7 #隐藏状态数目
+mix_num = 3
+iter_num = 6
+
 for filename in filename_list:
     in_dir = 'E://read-allquestion/hou_shu_01/'+filename+'.tsv'
     print("in_dir")
     print(in_dir)
     df = pd.read_csv(in_dir, sep='\t', header=0)
 
-    component_num = 7 #隐藏状态数目
-    mix_num = 3
     print("原始数据的大小：", df.shape)
     #print("原始数据的列名", df.columns)
 
@@ -302,7 +305,9 @@ for filename in filename_list:
     print("协方差X0")
     print(cov_X0)
     mean_X0 = np.mean(X0.T ,axis=1)
-    mean_X0= [mean_X0,mean_X0,mean_X0]
+    mean_X0L=[mean_X0[0]-0.1, mean_X0[1]]
+    mean_X0R=[mean_X0[0]+0.1, mean_X0[1]]
+    mean_X0= [mean_X0,mean_X0L,mean_X0R]
     print("均值X0")
     print(mean_X0)
 
@@ -311,7 +316,9 @@ for filename in filename_list:
     print("协方差X1")
     print(cov_X1)
     mean_X1 = np.mean(X1.T ,axis=1)
-    mean_X1= [mean_X1,mean_X1,mean_X1]
+    mean_X1L=[mean_X1[0]-0.1, mean_X1[1]]
+    mean_X1R=[mean_X1[0]+0.1, mean_X1[1]]
+    mean_X1= [mean_X1, mean_X1L, mean_X1R]
     print("均值X1")
     print(mean_X1)
 
@@ -320,7 +327,9 @@ for filename in filename_list:
     print("协方差X2")
     print(cov_X2)
     mean_X2 = np.mean(X2.T ,axis=1)
-    mean_X2= [mean_X2,mean_X2,mean_X2]
+    mean_X2L=[mean_X2[0]-0.1, mean_X2[1]]
+    mean_X2R=[mean_X2[0]+0.1, mean_X2[1]]
+    mean_X2= [mean_X2, mean_X2L, mean_X2R]
     print("均值X2")
     print(mean_X2)
 
@@ -329,7 +338,9 @@ for filename in filename_list:
     print("协方差X3")
     print(cov_X3)
     mean_X3 = np.mean(X3.T ,axis=1)
-    mean_X3= [mean_X3,mean_X3,mean_X3]
+    mean_X3L=[mean_X3[0]-0.1, mean_X3[1]]
+    mean_X3R=[mean_X3[0]+0.1, mean_X3[1]]
+    mean_X3= [mean_X3, mean_X3L, mean_X3R]
     print("均值X3")
     print(mean_X3)
 
@@ -338,7 +349,9 @@ for filename in filename_list:
     print("协方差X4")
     print(cov_X4)
     mean_X4 = np.mean(X4.T ,axis=1)
-    mean_X4= [mean_X4,mean_X4,mean_X4]
+    mean_X4L=[mean_X4[0]-0.1, mean_X4[1]]
+    mean_X4R=[mean_X4[0]+0.1, mean_X4[1]]
+    mean_X4= [mean_X4, mean_X4L, mean_X4R]
     print("均值X4")
     print(mean_X4)
 
@@ -347,7 +360,9 @@ for filename in filename_list:
     print("协方差X5")
     print(cov_X5)
     mean_X5 = np.mean(X5.T ,axis=1)
-    mean_X5= [mean_X5,mean_X5,mean_X5]
+    mean_X5L=[mean_X5[0]-0.1, mean_X5[1]]
+    mean_X5R=[mean_X5[0]+0.1, mean_X5[1]]
+    mean_X5= [mean_X5, mean_X5L, mean_X5R]
     print("均值X5")
     print(mean_X5)
 
@@ -356,7 +371,9 @@ for filename in filename_list:
     print("协方差X6")
     print(cov_X6)
     mean_X6 = np.mean(X6.T ,axis=1)
-    mean_X6= [mean_X6,mean_X6,mean_X6]
+    mean_X6L=[mean_X6[0]-0.1, mean_X6[1]]
+    mean_X6R=[mean_X6[0]+0.1, mean_X6[1]]
+    mean_X6= [mean_X6, mean_X6L, mean_X6R]
     print("均值X6")
     print(mean_X6)
 
@@ -368,6 +385,7 @@ for filename in filename_list:
     # for i in range(len(X)):  #dataframe的遍历
     #     if (X.loc[i, 0]< min) | (X.loc[i, 0] > max):
     #             X.loc[i, 0] = X.mean(axis=0)[0]
+
 
     X = X.tolist()
     #模型的构建
@@ -401,7 +419,7 @@ print(lengths)
 
 print("X_sum")
 print(X_sum)
-model = GMMHMM(n_components=component_num, n_mix=mix_num, covariance_type='full', n_iter=20, verbose=True, init_params='stcw') #'stmcw'
+model = GMMHMM(n_components=component_num, n_mix=mix_num, covariance_type='full', n_iter = iter_num, verbose=True, init_params='stcw') #'stmcw'
 
 #给一个初值
 model.means_ =pre_means_  #赋值初始均值矩阵???
@@ -420,65 +438,77 @@ model.means_ =pre_means_  #赋值初始均值矩阵???
 # print(pre_covs_)
 #model.covars_ = pre_covs_
 
-#在迭代过程中将点归回预先定义的AOI中
+#在迭代过程中将点归回预先定义的AOI中,GMM
 for i in range(10): #迭代次数
     model.fit(X_all, lengths)  # 拟合函数
     print("均值矩阵")
     print(model.means_)
-    # new_means = []
-    # # if in_which_AOI2(model.means_[0][0],model.means_[0][1])!=0:
-    # #     new_means.append(model.means_[0][0],)
-    # res = to_edge(model.means_[0][0], model.means_[0][1], 0)
-    # new_means.append(res)
-    #
-    # res = to_edge(model.means_[1][0], model.means_[1][1], 1)
-    # new_means.append(res)
-    #
-    # res = to_edge(model.means_[2][0], model.means_[2][1], 2)
-    # new_means.append(res)
-    #
-    # res = to_edge(model.means_[3][0], model.means_[3][1], 3)
-    # new_means.append(res)
-    #
-    # res = to_edge(model.means_[4][0], model.means_[4][1], 4)
-    # new_means.append(res)
-    #
-    # res = to_edge(model.means_[5][0], model.means_[5][1], 5)
-    # new_means.append(res)
-    #
-    # print("res")
-    # print(res)
-    #
-    # res = to_edge(model.means_[6][0], model.means_[6][1], 6)
-    # new_means.append(res)
-    #
-    # print("new_means")
-    # print(new_means)
-    #
-    #
-    # new_sp = model.startprob_#以前的原封不动的
-    # new_tm = model.transmat_#以前的原封不动的
-    # new_cov = model.covars_#以前的原封不动的
-    #
-    # new_means = np.array(new_means)#经过校正的
-    # model = GMMHMM(n_components=component_num, covariance_type='full', n_iter=20, verbose=True,
-    #             init_params='')  # 'stmcw'
-    #
-    # model.startprob_ = new_sp
-    # model.transmat_ = new_tm
-    # model.covars_ = new_cov
-    # model.means_ = new_means #修正均值矩阵
-    #
-    #
-    # for i in range(component_num):#一共7个状态
-    #     #for j in range(mix_num):#一共5个混合成分
-    #         pass
-    #         # x_y = (model.means_[i][0], model.means_[i][1])
-    #         # if model.means_[i][j][0]
-    #         #     model.means_[i][j][1]
-    # print("end")
-    # print("model.monitor_")
-    # print(model.monitor_)
+    new_means = []
+    new_means0 = []
+    new_means1 = []
+    new_means2 = []
+    new_means3 = []
+    new_means4 = []
+    new_means5 = []
+    new_means6 = []
+    # if in_which_AOI2(model.means_[0][0],model.means_[0][1])!=0:
+    #     new_means.append(model.means_[0][0],)
+    for j in range(mix_num):
+        res = to_edge(model.means_[0][j][0], model.means_[0][j][1], 0)
+        new_means0.append(res)
+
+    for j in range(mix_num):
+        res = to_edge(model.means_[1][j][0], model.means_[1][j][1], 1)
+        new_means1.append(res)
+
+    for j in range(mix_num):
+        res = to_edge(model.means_[2][j][0], model.means_[2][j][1], 2)
+        new_means2.append(res)
+
+    for j in range(mix_num):
+        res = to_edge(model.means_[3][j][0], model.means_[3][j][1], 3)
+        new_means3.append(res)
+
+    for j in range(mix_num):
+        res = to_edge(model.means_[4][j][0], model.means_[4][j][1], 4)
+        new_means4.append(res)
+
+    for j in range(mix_num):
+        res = to_edge(model.means_[5][j][0], model.means_[5][j][1], 5)
+        new_means5.append(res)
+
+    for j in range(mix_num):
+        res = to_edge(model.means_[6][j][0], model.means_[6][j][1], 6)
+        new_means6.append(res)
+
+    new_means = [new_means0, new_means1, new_means2, new_means3, new_means4, new_means5, new_means6]
+
+    new_sp = model.startprob_#以前的原封不动的
+    new_tm = model.transmat_#以前的原封不动的
+    new_cov = model.covars_#以前的原封不动的
+    new_w = model.weights_#以前的原封不动的
+
+    new_means = np.array(new_means)#经过校正的
+    print("new_means")
+    print(new_means)
+
+
+    model = GMMHMM(n_components=component_num, n_mix=mix_num, covariance_type='full', n_iter=iter_num, verbose=True,
+                   init_params='')  # 'stmcw'
+
+    model.startprob_ = new_sp
+    model.transmat_ = new_tm
+    model.covars_ = new_cov
+    model.weights_ = new_w
+    model.means_ = new_means #修正均值矩阵
+
+    print("end")
+    print("model.covars_")
+    print(model.covars_)
+    print("model.means_")
+    print(model.means_)
+    print("model.weights_")
+    print(model.weights_)
 
 #高斯混合输出图片
 for i in range(component_num):
