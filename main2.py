@@ -15,7 +15,7 @@ from sklearn.mixture import GaussianMixture
 
 component_num = 6 #隐藏状态数目
 mix_num = 4
-iter_num = 5
+iter_num = 10
 for_num = 10
 
 #将拟合后的均值画在原始背景图上面，设置一些路径等参数
@@ -619,80 +619,82 @@ model.weights_ = pre_weight_
 # print(pre_covs_)
 #model.covars_ = pre_covs_
 
-#在迭代过程中将点归回预先定义的AOI中,GMM
-for i in range(for_num): #迭代次数
-    model.fit(X_all, lengths)  # 拟合函数
-    print("均值矩阵")
-    print(model.means_)
-    print("协方差矩阵")
-    print(model.covars_)
-
-    new_means = []
-    new_means0 = []
-    new_means1 = []
-    new_means2 = []
-    new_means3 = []
-    new_means4 = []
-    new_means5 = []
-    #new_means6 = []
-    # if in_which_AOI2(model.means_[0][0],model.means_[0][1])!=0:
-    #     new_means.append(model.means_[0][0],)
-    for j in range(mix_num):
-        res = to_edge(model.means_[0][j][0], model.means_[0][j][1], 0)
-        new_means0.append(res)
-
-    for j in range(mix_num):
-        res = to_edge(model.means_[1][j][0], model.means_[1][j][1], 1)
-        new_means1.append(res)
-
-    for j in range(mix_num):
-        res = to_edge(model.means_[2][j][0], model.means_[2][j][1], 2)
-        new_means2.append(res)
-
-    for j in range(mix_num):
-        res = to_edge(model.means_[3][j][0], model.means_[3][j][1], 3)
-        new_means3.append(res)
-
-    for j in range(mix_num):
-        res = to_edge(model.means_[4][j][0], model.means_[4][j][1], 4)
-        new_means4.append(res)
-
-    for j in range(mix_num):
-        res = to_edge(model.means_[5][j][0], model.means_[5][j][1], 5)
-        new_means5.append(res)
-
-    # for j in range(mix_num):
-    #     res = to_edge(model.means_[6][j][0], model.means_[6][j][1], 6)
-    #     new_means6.append(res)
-
-    new_means = [new_means0, new_means1, new_means2, new_means3, new_means4, new_means5]# ,new_means6
-
-    new_sp = model.startprob_#以前的原封不动的
-    new_tm = model.transmat_#以前的原封不动的
-    new_cov = model.covars_#以前的原封不动的
-    new_w = model.weights_#以前的原封不动的
-
-    new_means = np.array(new_means)#经过校正的
-    print("new_means")
-    print(new_means)
-
-
-    model = GMMHMM(n_components=component_num, n_mix=mix_num, covariance_type='full', n_iter=iter_num, verbose=True,
-                   init_params='')  # 'stmcw'
-
-    model.startprob_ = new_sp
-    model.transmat_ = new_tm
-    model.covars_ = new_cov
-    model.weights_ = new_w
-    model.means_ = new_means #修正均值矩阵
-
-    print("end")
-    print("model.covars_")
-    print(model.covars_)
-    print("model.means_")
-    print(model.means_)
-    print("model.weights_")
-    print(model.weights_)
+model.fit(X_all, lengths)  # 拟合函数
+#
+# #在迭代过程中将点归回预先定义的AOI中,GMM
+# for i in range(for_num): #迭代次数
+#     model.fit(X_all, lengths)  # 拟合函数
+#     print("均值矩阵")
+#     print(model.means_)
+#     print("协方差矩阵")
+#     print(model.covars_)
+#
+#     new_means = []
+#     new_means0 = []
+#     new_means1 = []
+#     new_means2 = []
+#     new_means3 = []
+#     new_means4 = []
+#     new_means5 = []
+#     #new_means6 = []
+#     # if in_which_AOI2(model.means_[0][0],model.means_[0][1])!=0:
+#     #     new_means.append(model.means_[0][0],)
+#     for j in range(mix_num):
+#         res = to_edge(model.means_[0][j][0], model.means_[0][j][1], 0)
+#         new_means0.append(res)
+#
+#     for j in range(mix_num):
+#         res = to_edge(model.means_[1][j][0], model.means_[1][j][1], 1)
+#         new_means1.append(res)
+#
+#     for j in range(mix_num):
+#         res = to_edge(model.means_[2][j][0], model.means_[2][j][1], 2)
+#         new_means2.append(res)
+#
+#     for j in range(mix_num):
+#         res = to_edge(model.means_[3][j][0], model.means_[3][j][1], 3)
+#         new_means3.append(res)
+#
+#     for j in range(mix_num):
+#         res = to_edge(model.means_[4][j][0], model.means_[4][j][1], 4)
+#         new_means4.append(res)
+#
+#     for j in range(mix_num):
+#         res = to_edge(model.means_[5][j][0], model.means_[5][j][1], 5)
+#         new_means5.append(res)
+#
+#     # for j in range(mix_num):
+#     #     res = to_edge(model.means_[6][j][0], model.means_[6][j][1], 6)
+#     #     new_means6.append(res)
+#
+#     new_means = [new_means0, new_means1, new_means2, new_means3, new_means4, new_means5]# ,new_means6
+#
+#     new_sp = model.startprob_#以前的原封不动的
+#     new_tm = model.transmat_#以前的原封不动的
+#     new_cov = model.covars_#以前的原封不动的
+#     new_w = model.weights_#以前的原封不动的
+#
+#     new_means = np.array(new_means)#经过校正的
+#     print("new_means")
+#     print(new_means)
+#
+#
+#     model = GMMHMM(n_components=component_num, n_mix=mix_num, covariance_type='full', n_iter=iter_num, verbose=True,
+#                    init_params='')  # 'stmcw'
+#
+#     model.startprob_ = new_sp
+#     model.transmat_ = new_tm
+#     model.covars_ = new_cov
+#     model.weights_ = new_w
+#     model.means_ = new_means #修正均值矩阵
+#
+#     print("end")
+#     print("model.covars_")
+#     print(model.covars_)
+#     print("model.means_")
+#     print(model.means_)
+#     print("model.weights_")
+#     print(model.weights_)
 
 #高斯混合输出图片
 for i in range(component_num):
