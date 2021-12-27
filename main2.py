@@ -11,8 +11,21 @@ import matplotlib.pyplot as plt
 
 from matplotlib import cm, pyplot as plt
 from hmmlearn.hmm import *
-#数学后测4
+from sklearn.mixture import GaussianMixture
 
+component_num = 6 #隐藏状态数目
+mix_num = 4
+iter_num = 5
+for_num = 10
+
+#将拟合后的均值画在原始背景图上面，设置一些路径等参数
+in_file = 'background.jpg'
+# target_file = 'out/'+filename+'.png'
+target_file1 = 'out/filemeansGMM-new7.png'
+ini_file = 'out/inifilemeansGMM.png'
+target_file3 = 'out/filemeansGMM-3.png'
+
+#数学后测1
 diagram_LU = point(635, 57)
 diagram_RB = point(1265, 557)
 
@@ -146,15 +159,9 @@ def to_edge(x, y, index):  # 将跑出AOI的点归到边缘
     return [new_x/width, new_y/height]
 
 
-#将拟合后的均值画在原始背景图上面，设置一些路径等参数
-in_file = 'background.jpg'
-# target_file = 'out/'+filename+'.png'
-target_file1 = 'out/filemeansGMM-new7.png'
-target_file2 = 'out/filemeansGMM-2.png'
-target_file3 = 'out/filemeansGMM-3.png'
-
 orin_img = cv2.imread(in_file)
 img = cv2.resize(orin_img, (width, height))
+imgini = cv2.resize(orin_img, (width, height))
 #
 #数据处理 ， 默认丢弃含有缺失值的行
 filename_list = ['Project63-57 Recording23','Project63-57 Recording24','Project63-57 Recording28',
@@ -219,10 +226,13 @@ def make_ellipses(mean, cov, ax, confidence=5.991, alpha=0.3, color="blue", eigv
                      color=arrow_color_list[i])
 #'Project63-57 Recording63',
 
-component_num = 7 #隐藏状态数目
-mix_num = 3
-iter_num = 10
-for_num= 20
+X0 = []
+X1 = []
+X2 = []
+X3 = []
+X4 = []
+X5 = []
+X6 = []
 for filename in filename_list:
     in_dir = 'E://read-allquestion/hou_shu_01/'+filename+'.tsv'
     print("in_dir")
@@ -258,13 +268,6 @@ for filename in filename_list:
     #[[ 899.  893.  899.  896.  930.  926.  927.  948.  938.  918.  879.  887.]
     # [1229. 1105. 1140. 1187. 1099. 1111. 1153. 1107. 1103. 1063.  929.  967.]]
 
-    X0 = []
-    X1 = []
-    X2 = []
-    X3 = []
-    X4 = []
-    X5 = []
-    X6 = []
 
     for i, element in enumerate(X):
         print(i, element)
@@ -281,187 +284,39 @@ for filename in filename_list:
             X4.append(element)
         elif in_which_AOI2(element[0],element[1])==5:
             X5.append(element)
-        elif in_which_AOI2(element[0],element[1])==6:
-            X6.append(element)
-
-    X0 = np.array(X0)
-    X1 = np.array(X1)
-    X2 = np.array(X2)
-    X3 = np.array(X3)
-    X4 = np.array(X4)
-    X5 = np.array(X5)
-    X6 = np.array(X6)
-
-    print("X0")
-    print(X0)
-    print("X1")
-    print(X1)
-    print("X2")
-    print(X2)
-
-    # print("X.T")
-    # print(X.T)
-    cov_X0 = np.cov(X0.T)
-    print("协方差X0")
-    print(cov_X0)
-    mean_X0 = np.mean(X0.T ,axis=1)
-    mean_X0L=[mean_X0[0]-0.1, mean_X0[1]]
-    mean_X0R=[mean_X0[0]+0.1, mean_X0[1]]
-    mean_X0= [mean_X0,mean_X0L,mean_X0R]
-    # print("均值X0")
-    # print(mean_X0)
-    diagramx1 = np.random.randint(diagram_LU.x, diagram_RB.x)/width
-    diagramy1 = np.random.randint(diagram_LU.y, diagram_RB.y)/height
-    diagramx2 = np.random.randint(diagram_LU.x, diagram_RB.x)/width
-    diagramy2 = np.random.randint(diagram_LU.y, diagram_RB.y)/height
-    diagramx3 = np.random.randint(diagram_LU.x, diagram_RB.x)/width
-    diagramy3 = np.random.randint(diagram_LU.y, diagram_RB.y)/height
-    diagram1 = [diagramx1,diagramy1]
-    diagram2 = [diagramx2,diagramy2]
-    diagram3 = [diagramx3,diagramy3]
-    mean_X0 = [diagram1,diagram2,diagram3]
-    print("mean_X0")
-    print(mean_X0)
-
-
-    cov_X1 = np.cov(X1.T)
-    print("协方差X1")
-    print(cov_X1)
-    mean_X1 = np.mean(X1.T ,axis=1)
-    mean_X1L=[mean_X1[0]-0.1, mean_X1[1]]
-    mean_X1R=[mean_X1[0]+0.1, mean_X1[1]]
-    mean_X1= [mean_X1, mean_X1L, mean_X1R]
-    # print("均值X1")
-    # print(mean_X1)
-    optionAx1 = np.random.randint(optionA_LU.x, optionA_RB.x)/width
-    optionAy1 = np.random.randint(optionA_LU.y, optionA_RB.y)/height
-    optionAx2 = np.random.randint(optionA_LU.x, optionA_RB.x)/width
-    optionAy2 = np.random.randint(optionA_LU.y, optionA_RB.y)/height
-    optionAx3 = np.random.randint(optionA_LU.x, optionA_RB.x)/width
-    optionAy3 = np.random.randint(optionA_LU.y, optionA_RB.y)/height
-    optionA1 = [optionAx1,optionAy1]
-    optionA2 = [optionAx2,optionAy2]
-    optionA3 = [optionAx3,optionAy3]
-    mean_X1 = [optionA1,optionA2,optionA3]
-    print("mean_X1")
-    print(mean_X1)
-
-
-    cov_X2 = np.cov(X2.T)
-    print("协方差X2")
-    print(cov_X2)
-    mean_X2 = np.mean(X2.T ,axis=1)
-    mean_X2L=[mean_X2[0]-0.1, mean_X2[1]]
-    mean_X2R=[mean_X2[0]+0.1, mean_X2[1]]
-    mean_X2= [mean_X2, mean_X2L, mean_X2R]
-    # print("均值X2")
-    # print(mean_X2)
-    optionBx1 = np.random.randint(optionB_LU.x, optionB_RB.x)/width
-    optionBy1 = np.random.randint(optionB_LU.y, optionB_RB.y)/height
-    optionBx2 = np.random.randint(optionB_LU.x, optionB_RB.x)/width
-    optionBy2 = np.random.randint(optionB_LU.y, optionB_RB.y)/height
-    optionBx3 = np.random.randint(optionB_LU.x, optionB_RB.x)/width
-    optionBy3 = np.random.randint(optionB_LU.y, optionB_RB.y)/height
-    optionB1 = [optionBx1,optionBy1]
-    optionB2 = [optionBx2,optionBy2]
-    optionB3 = [optionBx3,optionBy3]
-    mean_X2 = [optionB1,optionB2,optionB3]
-    print("mean_X2")
-    print(mean_X2)
-
-
-    cov_X3 = np.cov(X3.T)
-    print("协方差X3")
-    print(cov_X3)
-    mean_X3 = np.mean(X3.T ,axis=1)
-    mean_X3L=[mean_X3[0]-0.1, mean_X3[1]]
-    mean_X3R=[mean_X3[0]+0.1, mean_X3[1]]
-    mean_X3= [mean_X3, mean_X3L, mean_X3R]
-    # print("均值X3")
-    # print(mean_X3)
-    optionCx1 = np.random.randint(optionC_LU.x, optionC_RB.x)/width
-    optionCy1 = np.random.randint(optionC_LU.y, optionC_RB.y)/height
-    optionCx2 = np.random.randint(optionC_LU.x, optionC_RB.x)/width
-    optionCy2 = np.random.randint(optionC_LU.y, optionC_RB.y)/height
-    optionCx3 = np.random.randint(optionC_LU.x, optionC_RB.x)/width
-    optionCy3 = np.random.randint(optionC_LU.y, optionC_RB.y)/height
-    optionC1 = [optionCx1,optionCy1]
-    optionC2 = [optionCx2,optionCy2]
-    optionC3 = [optionCx3,optionCy3]
-    mean_X3 = [optionC1,optionC2,optionC3]
-    print("mean_X3")
-    print(mean_X3)
-
-
-    cov_X4 = np.cov(X4.T)
-    print("协方差X4")
-    print(cov_X4)
-    mean_X4 = np.mean(X4.T ,axis=1)
-    mean_X4L=[mean_X4[0]-0.1, mean_X4[1]]
-    mean_X4R=[mean_X4[0]+0.1, mean_X4[1]]
-    mean_X4= [mean_X4, mean_X4L, mean_X4R]
-    # print("均值X4")
-    # print(mean_X4)
-    optionDx1 = np.random.randint(optionD_LU.x, optionD_RB.x)/width
-    optionDy1 = np.random.randint(optionD_LU.y, optionD_RB.y)/height
-    optionDx2 = np.random.randint(optionD_LU.x, optionD_RB.x)/width
-    optionDy2 = np.random.randint(optionD_LU.y, optionD_RB.y)/height
-    optionDx3 = np.random.randint(optionD_LU.x, optionD_RB.x)/width
-    optionDy3 = np.random.randint(optionD_LU.y, optionD_RB.y)/height
-    optionD1 = [optionDx1,optionDy1]
-    optionD2 = [optionDx2,optionDy2]
-    optionD3 = [optionDx3,optionDy3]
-    mean_X4 = [optionD1,optionD2,optionD3]
-    print("mean_X4")
-    print(mean_X4)
-
-
-
-    cov_X5 = np.cov(X5.T)
-    print("协方差X5")
-    print(cov_X5)
-    mean_X5 = np.mean(X5.T ,axis=1)
-    mean_X5L=[mean_X5[0]-0.1, mean_X5[1]]
-    mean_X5R=[mean_X5[0]+0.1, mean_X5[1]]
-    mean_X5= [mean_X5, mean_X5L, mean_X5R]
-    # print("均值X5")
-    # print(mean_X5)
-    stamentx1 = np.random.randint(stament_LU.x, stament_RB.x)/width
-    stamenty1 = np.random.randint(stament_LU.y, stament_RB.y)/height
-    stamentx2 = np.random.randint(stament_LU.x, stament_RB.x)/width
-    stamenty2 = np.random.randint(stament_LU.y, stament_RB.y)/height
-    stamentx3 = np.random.randint(stament_LU.x, stament_RB.x)/width
-    stamenty3 = np.random.randint(stament_LU.y, stament_RB.y)/height
-    stament1 = [stamentx1,stamenty1]
-    stament2 = [stamentx2,stamenty2]
-    stament3 = [stamentx3,stamenty3]
-    mean_X4 = [stament1,stament2,stament3]
-    print("mean_X5")
-    print(mean_X5)
-
-
-
-    cov_X6 = np.cov(X6.T)
-    print("协方差X6")
-    print(cov_X6)
-    mean_X6 = np.mean(X6.T ,axis=1)
-    mean_X6L=[mean_X6[0]-0.1, mean_X6[1]]
-    mean_X6R=[mean_X6[0]+0.1, mean_X6[1]]
-    mean_X6= [mean_X6, mean_X6L, mean_X6R]
+        # elif in_which_AOI2(element[0],element[1])==6:
+        #     X6.append(element)
+    # cov_X6 = np.cov(X6.T)
+    # print("协方差X6")
+    # print(cov_X6)
+    # mean_X6 = np.mean(X6.T ,axis=1)
+    # mean_X6L=[mean_X6[0]-0.1, mean_X6[1]]
+    # mean_X6R=[mean_X6[0]+0.1, mean_X6[1]]
+    # mean_X6= [mean_X6, mean_X6L, mean_X6R]
     # print("均值X6")
     # print(mean_X6)
-    timex1 = np.random.randint(time_LU.x, time_RB.x)/width
-    timey1 = np.random.randint(time_LU.y, time_RB.y)/height
-    timex2 = np.random.randint(time_LU.x, time_RB.x)/width
-    timey2 = np.random.randint(time_LU.y, time_RB.y)/height
-    timex3 = np.random.randint(time_LU.x, time_RB.x)/width
-    timey3 = np.random.randint(time_LU.y, time_RB.y)/height
-    time1 = [timex1,timey1]
-    time2 = [timex2,timey2]
-    time3 = [timex3,timey3]
-    mean_X6 = [time1,time2,time3]
-    print("mean_X6")
-    print(mean_X6)
+    # timex1 = np.random.randint(time_LU.x, time_RB.x)/width
+    # timey1 = np.random.randint(time_LU.y, time_RB.y)/height
+    # timex2 = np.random.randint(time_LU.x, time_RB.x)/width
+    # timey2 = np.random.randint(time_LU.y, time_RB.y)/height
+    # timex3 = np.random.randint(time_LU.x, time_RB.x)/width
+    # timey3 = np.random.randint(time_LU.y, time_RB.y)/height
+    # time1 = [timex1,timey1]
+    # time2 = [timex2,timey2]
+    # time3 = [timex3,timey3]
+    # mean_X6 = [time1,time2,time3]
+
+    # gm6 = GaussianMixture(n_components=mix_num, random_state=0).fit(X6)
+    # print("gm1.means_")
+    # print(gm6.means_)
+    # mean_X6 = gm6.means_
+    # cov_X6 = gm6.covariances_
+    # print("mean_X6")
+    # print(mean_X6)
+    # print("cov_X6")
+    # print(cov_X6)
+    # print("mean_X6")
+    # print(mean_X6)
 
     # #异常值的处理
     # min = X.mean(axis=0)[0] - 8*X.std(axis=0)[0]   #最小值
@@ -471,23 +326,261 @@ for filename in filename_list:
     # for i in range(len(X)):  #dataframe的遍历
     #     if (X.loc[i, 0]< min) | (X.loc[i, 0] > max):
     #             X.loc[i, 0] = X.mean(axis=0)[0]
-
+    #X 接在X_all后面
 
     X = X.tolist()
-    #模型的构建
-    #数据集的划分
-    #模型的搭建
-    pre_means_ = [mean_X0, mean_X1, mean_X2, mean_X3, mean_X4, mean_X5, mean_X6]
-    pre_covs_ = [cov_X0, cov_X1, cov_X2, cov_X3, cov_X4, cov_X5, cov_X6]
-    pre_covs_ = np.array(pre_covs_)
-    #X 接在X_all后面
     X_all += X
     X_sum.append(X)#三维数组，目的是后期根据观测序列运行Viterbi
     #多序列的均值和方差如何设置
     # pre_means_all += pre_means_
     # pre_means_all.append(pre_means_)
-    pre_covs_all.append(pre_covs_)
     lengths.append(len(X))
+
+
+X0 = np.array(X0)
+X1 = np.array(X1)
+X2 = np.array(X2)
+X3 = np.array(X3)
+X4 = np.array(X4)
+X5 = np.array(X5)
+# X6 = np.array(X6)
+
+print("X0")
+print(X0)
+print("X1")
+print(X1)
+print("X2")
+print(X2)
+# labels = gmm0.predict(X0)
+
+# print("X.T")
+# print(X.T)
+# cov_X0 = np.cov(X0.T)
+# print("协方差X0")
+# print(cov_X0)
+# mean_X0 = np.mean(X0.T ,axis=1)
+# mean_X0L=[mean_X0[0]-0.1, mean_X0[1]]
+# mean_X0R=[mean_X0[0]+0.1, mean_X0[1]]
+# mean_X0= [mean_X0,mean_X0L,mean_X0R]
+# # print("均值X0")
+# # print(mean_X0)
+# diagramx1 = np.random.randint(diagram_LU.x, diagram_RB.x)/width
+# diagramy1 = np.random.randint(diagram_LU.y, diagram_RB.y)/height
+# diagramx2 = np.random.randint(diagram_LU.x, diagram_RB.x)/width
+# diagramy2 = np.random.randint(diagram_LU.y, diagram_RB.y)/height
+# diagramx3 = np.random.randint(diagram_LU.x, diagram_RB.x)/width
+# diagramy3 = np.random.randint(diagram_LU.y, diagram_RB.y)/height
+# diagram1 = [diagramx1,diagramy1]
+# diagram2 = [diagramx2,diagramy2]
+# diagram3 = [diagramx3,diagramy3]
+# mean_X0 = [diagram1,diagram2,diagram3]
+gm0 = GaussianMixture(n_components=mix_num, random_state=0).fit(X0)
+print("gm0.means_")
+print(gm0.means_)
+mean_X0 = gm0.means_
+cov_X0 = gm0.covariances_
+weight_X0 = gm0.weights_
+print("mean_X0")
+print(mean_X0)
+print("cov_X0")
+print(cov_X0)
+
+# cov_X1 = np.cov(X1.T)
+# print("协方差X1")
+# print(cov_X1)
+# mean_X1 = np.mean(X1.T ,axis=1)
+# mean_X1L=[mean_X1[0]-0.1, mean_X1[1]]
+# mean_X1R=[mean_X1[0]+0.1, mean_X1[1]]
+# mean_X1= [mean_X1, mean_X1L, mean_X1R]
+# # print("均值X1")
+# # print(mean_X1)
+# optionAx1 = np.random.randint(optionA_LU.x, optionA_RB.x)/width
+# optionAy1 = np.random.randint(optionA_LU.y, optionA_RB.y)/height
+# optionAx2 = np.random.randint(optionA_LU.x, optionA_RB.x)/width
+# optionAy2 = np.random.randint(optionA_LU.y, optionA_RB.y)/height
+# optionAx3 = np.random.randint(optionA_LU.x, optionA_RB.x)/width
+# optionAy3 = np.random.randint(optionA_LU.y, optionA_RB.y)/height
+# optionA1 = [optionAx1,optionAy1]
+# optionA2 = [optionAx2,optionAy2]
+# optionA3 = [optionAx3,optionAy3]
+# mean_X1 = [optionA1,optionA2,optionA3]
+
+gm1 = GaussianMixture(n_components=mix_num, random_state=0).fit(X1)
+print("gm1.means_")
+print(gm1.means_)
+mean_X1 = gm1.means_
+cov_X1 = gm1.covariances_
+weight_X1 = gm1.weights_
+print("mean_X1")
+print(mean_X1)
+print("cov_X1")
+print(cov_X1)
+print("mean_X1")
+print(mean_X1)
+
+# cov_X2 = np.cov(X2.T)
+# print("协方差X2")
+# print(cov_X2)
+# mean_X2 = np.mean(X2.T ,axis=1)
+# mean_X2L=[mean_X2[0]-0.1, mean_X2[1]]
+# mean_X2R=[mean_X2[0]+0.1, mean_X2[1]]
+# mean_X2= [mean_X2, mean_X2L, mean_X2R]
+# # print("均值X2")
+# # print(mean_X2)
+# optionBx1 = np.random.randint(optionB_LU.x, optionB_RB.x)/width
+# optionBy1 = np.random.randint(optionB_LU.y, optionB_RB.y)/height
+# optionBx2 = np.random.randint(optionB_LU.x, optionB_RB.x)/width
+# optionBy2 = np.random.randint(optionB_LU.y, optionB_RB.y)/height
+# optionBx3 = np.random.randint(optionB_LU.x, optionB_RB.x)/width
+# optionBy3 = np.random.randint(optionB_LU.y, optionB_RB.y)/height
+# optionB1 = [optionBx1,optionBy1]
+# optionB2 = [optionBx2,optionBy2]
+# optionB3 = [optionBx3,optionBy3]
+# mean_X2 = [optionB1,optionB2,optionB3]
+
+gm2 = GaussianMixture(n_components=mix_num, random_state=0).fit(X2)
+print("gm1.means_")
+print(gm2.means_)
+mean_X2 = gm2.means_
+cov_X2 = gm2.covariances_
+weight_X2 = gm2.weights_
+print("mean_X2")
+print(mean_X2)
+print("cov_X2")
+print(cov_X2)
+print("mean_X2")
+print(mean_X2)
+
+# cov_X3 = np.cov(X3.T)
+# print("协方差X3")
+# print(cov_X3)
+# mean_X3 = np.mean(X3.T ,axis=1)
+# mean_X3L=[mean_X3[0]-0.1, mean_X3[1]]
+# mean_X3R=[mean_X3[0]+0.1, mean_X3[1]]
+# mean_X3= [mean_X3, mean_X3L, mean_X3R]
+# # print("均值X3")
+# # print(mean_X3)
+# optionCx1 = np.random.randint(optionC_LU.x, optionC_RB.x)/width
+# optionCy1 = np.random.randint(optionC_LU.y, optionC_RB.y)/height
+# optionCx2 = np.random.randint(optionC_LU.x, optionC_RB.x)/width
+# optionCy2 = np.random.randint(optionC_LU.y, optionC_RB.y)/height
+# optionCx3 = np.random.randint(optionC_LU.x, optionC_RB.x)/width
+# optionCy3 = np.random.randint(optionC_LU.y, optionC_RB.y)/height
+# optionC1 = [optionCx1,optionCy1]
+# optionC2 = [optionCx2,optionCy2]
+# optionC3 = [optionCx3,optionCy3]
+# mean_X3 = [optionC1,optionC2,optionC3]
+
+gm3 = GaussianMixture(n_components=mix_num, random_state=0).fit(X3)
+print("gm1.means_")
+print(gm3.means_)
+mean_X3 = gm3.means_
+cov_X3 = gm3.covariances_
+weight_X3 = gm3.weights_
+print("mean_X3")
+print(mean_X3)
+print("cov_X3")
+print(cov_X3)
+print("mean_X3")
+print(mean_X3)
+
+# cov_X4 = np.cov(X4.T)
+# print("协方差X4")
+# print(cov_X4)
+# mean_X4 = np.mean(X4.T ,axis=1)
+# mean_X4L=[mean_X4[0]-0.1, mean_X4[1]]
+# mean_X4R=[mean_X4[0]+0.1, mean_X4[1]]
+# mean_X4= [mean_X4, mean_X4L, mean_X4R]
+# # print("均值X4")
+# # print(mean_X4)
+# optionDx1 = np.random.randint(optionD_LU.x, optionD_RB.x)/width
+# optionDy1 = np.random.randint(optionD_LU.y, optionD_RB.y)/height
+# optionDx2 = np.random.randint(optionD_LU.x, optionD_RB.x)/width
+# optionDy2 = np.random.randint(optionD_LU.y, optionD_RB.y)/height
+# optionDx3 = np.random.randint(optionD_LU.x, optionD_RB.x)/width
+# optionDy3 = np.random.randint(optionD_LU.y, optionD_RB.y)/height
+# optionD1 = [optionDx1,optionDy1]
+# optionD2 = [optionDx2,optionDy2]
+# optionD3 = [optionDx3,optionDy3]
+# mean_X4 = [optionD1,optionD2,optionD3]
+
+gm4 = GaussianMixture(n_components=mix_num, random_state=0).fit(X4)
+print("gm1.means_")
+print(gm4.means_)
+mean_X4 = gm4.means_
+cov_X4 = gm4.covariances_
+weight_X4 = gm4.weights_
+print("mean_X4")
+print(mean_X4)
+print("cov_X4")
+print(cov_X4)
+print("mean_X4")
+print(mean_X4)
+
+# cov_X5 = np.cov(X5.T)
+# print("协方差X5")
+# print(cov_X5)
+# mean_X5 = np.mean(X5.T ,axis=1)
+# mean_X5L=[mean_X5[0]-0.1, mean_X5[1]]
+# mean_X5R=[mean_X5[0]+0.1, mean_X5[1]]
+# mean_X5= [mean_X5, mean_X5L, mean_X5R]
+# # print("均值X5")
+# # print(mean_X5)
+# stamentx1 = np.random.randint(stament_LU.x, stament_RB.x)/width
+# stamenty1 = np.random.randint(stament_LU.y, stament_RB.y)/height
+# stamentx2 = np.random.randint(stament_LU.x, stament_RB.x)/width
+# stamenty2 = np.random.randint(stament_LU.y, stament_RB.y)/height
+# stamentx3 = np.random.randint(stament_LU.x, stament_RB.x)/width
+# stamenty3 = np.random.randint(stament_LU.y, stament_RB.y)/height
+# stament1 = [stamentx1,stamenty1]
+# stament2 = [stamentx2,stamenty2]
+# stament3 = [stamentx3,stamenty3]
+# mean_X4 = [stament1,stament2,stament3]
+
+gm5 = GaussianMixture(n_components=mix_num, random_state=0).fit(X5)
+print("gm1.means_")
+print(gm5.means_)
+mean_X5 = gm5.means_
+cov_X5 = gm5.covariances_
+weight_X5 = gm5.weights_
+print("mean_X5")
+print(mean_X5)
+print("cov_X5")
+print(cov_X5)
+print("mean_X5")
+print(mean_X5)
+
+pre_means_ = [mean_X0, mean_X1, mean_X2, mean_X3, mean_X4, mean_X5]  # , mean_X6
+pre_covs_ = [cov_X0, cov_X1, cov_X2, cov_X3, cov_X4, cov_X5]  # , cov_X6
+pre_weight_ = [weight_X0, weight_X1, weight_X2, weight_X3, weight_X4, weight_X5]
+pre_weight_ = np.array(pre_weight_)
+pre_covs_ = np.array(pre_covs_)
+
+#看一下初始值 高斯混合输出图片
+for i in range(component_num):
+    for j in range(mix_num):
+        #x_y = (model.means_[i][0], model.means_[i][1])
+        cv2.circle(imgini, (int(pre_means_[i][j][0]*width), int(pre_means_[i][j][1]*height)), 5, (0, 0, 255), -1)
+        cv2.putText(imgini, str(i), (int(pre_means_[i][j][0]*width), int(pre_means_[i][j][1]*height)), cv2.FONT_ITALIC, 0.9, (210, 50, 220), 2, cv2.LINE_AA)
+cv2.imwrite(ini_file, imgini)
+
+
+#输出置信度是0.95的高斯混合模型，需要归一化
+plt.rcParams["figure.figsize"] = (10.0, 10.0)
+fig, ax = plt.subplots()
+ax.set_xlabel("x")
+ax.set_ylabel("y")
+confidence = 5.991
+color = "red"
+alpha = 0.3
+eigv = False
+for i in range(component_num):
+    for j in range(mix_num):
+        make_ellipses(pre_means_[i][j], pre_covs_[i][j], ax, confidence=confidence, color=color, alpha=alpha, eigv=eigv)
+
+plt.savefig('out/ini_gaussian_covariance_matrix.png')
+#plt.savefig("/out/gaussian_covariance_matrix.png")
+#plt.show()
 
 print("X_all")
 print(X_all)
@@ -505,10 +598,12 @@ print(lengths)
 
 print("X_sum")
 print(X_sum)
-model = GMMHMM(n_components=component_num, n_mix=mix_num, covariance_type='full', n_iter = iter_num, verbose=True, init_params='stcw') #'stmcw'
+model = GMMHMM(n_components=component_num, n_mix=mix_num, covariance_type='full', n_iter = iter_num, verbose=True, init_params='st') #'stmcw'
 
 #给一个初值
 model.means_ =pre_means_  #赋值初始均值矩阵???
+model.covars_ = pre_covs_
+model.weights_ = pre_weight_
 #model.covars_ = pre_covs_
 
 # model = GMMHMM(n_components=component_num, n_mix=mix_num, covariance_type='full', n_iter=1)  # , init_params='stmcw''stmcw'
@@ -529,6 +624,9 @@ for i in range(for_num): #迭代次数
     model.fit(X_all, lengths)  # 拟合函数
     print("均值矩阵")
     print(model.means_)
+    print("协方差矩阵")
+    print(model.covars_)
+
     new_means = []
     new_means0 = []
     new_means1 = []
@@ -536,7 +634,7 @@ for i in range(for_num): #迭代次数
     new_means3 = []
     new_means4 = []
     new_means5 = []
-    new_means6 = []
+    #new_means6 = []
     # if in_which_AOI2(model.means_[0][0],model.means_[0][1])!=0:
     #     new_means.append(model.means_[0][0],)
     for j in range(mix_num):
@@ -563,11 +661,11 @@ for i in range(for_num): #迭代次数
         res = to_edge(model.means_[5][j][0], model.means_[5][j][1], 5)
         new_means5.append(res)
 
-    for j in range(mix_num):
-        res = to_edge(model.means_[6][j][0], model.means_[6][j][1], 6)
-        new_means6.append(res)
+    # for j in range(mix_num):
+    #     res = to_edge(model.means_[6][j][0], model.means_[6][j][1], 6)
+    #     new_means6.append(res)
 
-    new_means = [new_means0, new_means1, new_means2, new_means3, new_means4, new_means5, new_means6]
+    new_means = [new_means0, new_means1, new_means2, new_means3, new_means4, new_means5]# ,new_means6
 
     new_sp = model.startprob_#以前的原封不动的
     new_tm = model.transmat_#以前的原封不动的
