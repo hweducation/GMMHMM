@@ -158,16 +158,18 @@ orin_img = cv2.imread(in_file)
 img = cv2.resize(orin_img, (width, height))
 #
 #数据处理 ， 默认丢弃含有缺失值的行
-# filename_list = ['Project63-57 Recording23','Project63-57 Recording24','Project63-57 Recording28',
-#           'Project63-57 Recording30','Project63-57 Recording32',
-#           'Project77-70 Recording18','Project77-70 Recording25','Project77-70 Recording26',
-#           'Project77-70 Recording31','Project77-70 Recording46','Project77-70 Recording70']
-filename_list = ['Project77-70 Recording46', 'Project77-70 Recording70']
+filename_list = ['Project63-57 Recording23','Project63-57 Recording24','Project63-57 Recording28',
+          'Project63-57 Recording30','Project63-57 Recording32',
+          'Project77-70 Recording18','Project77-70 Recording25','Project77-70 Recording26',
+          'Project77-70 Recording31','Project77-70 Recording46','Project77-70 Recording70']
+#filename_list = ['Project77-70 Recording46']#, 'Project77-70 Recording70'
 X_sum = []#三维
 X_all = []#二维
 pre_means_all = []
 pre_covs_all = []
 lengths = []
+component_num = 15 #隐藏状态数目
+mix_num = 3
 def make_ellipses(mean, cov, ax, confidence=5.991, alpha=0.3, color="blue", eigv=False, arrow_color_list=None):
     """
     多元正态分布
@@ -225,8 +227,6 @@ for filename in filename_list:
     print(in_dir)
     df = pd.read_csv(in_dir, sep='\t', header=0)
 
-    component_num = 7 #隐藏状态数目
-    mix_num = 3
     print("原始数据的大小：", df.shape)
     #print("原始数据的列名", df.columns)
 
@@ -395,11 +395,18 @@ print(lengths)
 
 print("X_sum")
 print(X_sum)
-model = GaussianHMM(n_components=component_num, covariance_type='full', n_iter=5, verbose=True, init_params='st') #'stmcw'
-
-#给一个初值
-model.means_ = pre_means_ #赋值初始均值矩阵
-model.covars_ = pre_covs_
+model = GaussianHMM(n_components=component_num, covariance_type='full', n_iter=20, verbose=True, init_params='st') #'stmcw'
+stable_means =[[958/width,84/height],[725/width,504/height],[959/width,504/height],
+               [887/width,595/height],[1343/width,610/height],[617/width,788/height],
+               [1072/width,801/height], [979/width,710/height],[587/width,865/height],
+               [1065/width,857/height],[522/width,941/height],[1095/width,942/height]]
+# stable_means = np.array(stable_means)
+#
+# model.means_ = stable_means
+model.fit(X_all, lengths)  # 拟合函数
+# #给一个初值
+# model.means_ = pre_means_ #赋值初始均值矩阵
+# model.covars_ = pre_covs_
 
 # model = GMMHMM(n_components=component_num, n_mix=mix_num, covariance_type='full', n_iter=1)  # , init_params='stmcw''stmcw'
 
@@ -413,66 +420,66 @@ model.covars_ = pre_covs_
 # print(pre_covs_.shape)
 # print(pre_covs_)
 #model.covars_ = pre_covs_
-
-#在迭代过程中将点归回预先定义的AOI中
-for i in range(20): #迭代次数
-    model.fit(X_all, lengths)  # 拟合函数
-    print("均值矩阵")
-    print(model.means_)
-    new_means = []
-    # if in_which_AOI2(model.means_[0][0],model.means_[0][1])!=0:
-    #     new_means.append(model.means_[0][0],)
-    res = to_edge(model.means_[0][0], model.means_[0][1], 0)
-    new_means.append(res)
-
-    res = to_edge(model.means_[1][0], model.means_[1][1], 1)
-    new_means.append(res)
-
-    res = to_edge(model.means_[2][0], model.means_[2][1], 2)
-    new_means.append(res)
-
-    res = to_edge(model.means_[3][0], model.means_[3][1], 3)
-    new_means.append(res)
-
-    res = to_edge(model.means_[4][0], model.means_[4][1], 4)
-    new_means.append(res)
-
-    res = to_edge(model.means_[5][0], model.means_[5][1], 5)
-    new_means.append(res)
-
-    print("res")
-    print(res)
-
-    res = to_edge(model.means_[6][0], model.means_[6][1], 6)
-    new_means.append(res)
-
-    print("new_means")
-    print(new_means)
-
-
-    new_sp = model.startprob_#以前的原封不动的
-    new_tm = model.transmat_#以前的原封不动的
-    new_cov = model.covars_#以前的原封不动的
-
-    new_means = np.array(new_means)#经过校正的
-    model = GaussianHMM(n_components=component_num, covariance_type='full', n_iter=5, verbose=True,
-                init_params='')  # 'stmcw'
-
-    model.startprob_ = new_sp
-    model.transmat_ = new_tm
-    model.covars_ = new_cov
-    model.means_ = new_means #修正均值矩阵
-
-
-    for i in range(component_num):#一共7个状态
-        #for j in range(mix_num):#一共5个混合成分
-            pass
-            # x_y = (model.means_[i][0], model.means_[i][1])
-            # if model.means_[i][j][0]
-            #     model.means_[i][j][1]
-    print("end")
-    print("model.monitor_")
-    print(model.monitor_)
+#
+# #在迭代过程中将点归回预先定义的AOI中
+# for i in range(20): #迭代次数
+#     model.fit(X_all, lengths)  # 拟合函数
+#     print("均值矩阵")
+#     print(model.means_)
+#     new_means = []
+#     # if in_which_AOI2(model.means_[0][0],model.means_[0][1])!=0:
+#     #     new_means.append(model.means_[0][0],)
+#     res = to_edge(model.means_[0][0], model.means_[0][1], 0)
+#     new_means.append(res)
+#
+#     res = to_edge(model.means_[1][0], model.means_[1][1], 1)
+#     new_means.append(res)
+#
+#     res = to_edge(model.means_[2][0], model.means_[2][1], 2)
+#     new_means.append(res)
+#
+#     res = to_edge(model.means_[3][0], model.means_[3][1], 3)
+#     new_means.append(res)
+#
+#     res = to_edge(model.means_[4][0], model.means_[4][1], 4)
+#     new_means.append(res)
+#
+#     res = to_edge(model.means_[5][0], model.means_[5][1], 5)
+#     new_means.append(res)
+#
+#     print("res")
+#     print(res)
+#
+#     res = to_edge(model.means_[6][0], model.means_[6][1], 6)
+#     new_means.append(res)
+#
+#     print("new_means")
+#     print(new_means)
+#
+#
+#     new_sp = model.startprob_#以前的原封不动的
+#     new_tm = model.transmat_#以前的原封不动的
+#     new_cov = model.covars_#以前的原封不动的
+#
+#     new_means = np.array(new_means)#经过校正的
+#     model = GaussianHMM(n_components=component_num, covariance_type='full', n_iter=5, verbose=True,
+#                 init_params='')  # 'stmcw'
+#
+#     model.startprob_ = new_sp
+#     model.transmat_ = new_tm
+#     model.covars_ = new_cov
+#     model.means_ = new_means #修正均值矩阵
+#
+#
+#     for i in range(component_num):#一共7个状态
+#         #for j in range(mix_num):#一共5个混合成分
+#             pass
+#             # x_y = (model.means_[i][0], model.means_[i][1])
+#             # if model.means_[i][j][0]
+#             #     model.means_[i][j][1]
+#     print("end")
+#     print("model.monitor_")
+#     print(model.monitor_)
 
 # #高斯混合输出图片
 # for i in range(component_num):
