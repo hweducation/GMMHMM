@@ -149,7 +149,7 @@ def to_edge(x, y, index):  # 将跑出AOI的点归到边缘
 #将拟合后的均值画在原始背景图上面，设置一些路径等参数
 in_file = 'background.jpg'
 # target_file = 'out/'+filename+'.png'
-target_file1 = 'out/filemeansGMM-new6.png'
+target_file1 = 'out/filemeansGMM-new7.png'
 target_file2 = 'out/filemeansGMM-2.png'
 target_file3 = 'out/filemeansGMM-3.png'
 
@@ -157,11 +157,11 @@ orin_img = cv2.imread(in_file)
 img = cv2.resize(orin_img, (width, height))
 #
 #数据处理 ， 默认丢弃含有缺失值的行
-# filename_list = ['Project63-57 Recording23','Project63-57 Recording24','Project63-57 Recording28',
-#           'Project63-57 Recording30','Project63-57 Recording32',
-#           'Project77-70 Recording18','Project77-70 Recording25','Project77-70 Recording26',
-#           'Project77-70 Recording31','Project77-70 Recording46','Project77-70 Recording70']
-filename_list = ['Project77-70 Recording46', 'Project77-70 Recording70']
+filename_list = ['Project63-57 Recording23','Project63-57 Recording24','Project63-57 Recording28',
+          'Project63-57 Recording30','Project63-57 Recording32',
+          'Project77-70 Recording18','Project77-70 Recording25','Project77-70 Recording26',
+          'Project77-70 Recording31','Project77-70 Recording46','Project77-70 Recording70']
+# filename_list = ['Project77-70 Recording46', 'Project77-70 Recording70']
 X_sum = []#三维
 X_all = []#二维
 pre_means_all = []
@@ -222,7 +222,7 @@ def make_ellipses(mean, cov, ax, confidence=5.991, alpha=0.3, color="blue", eigv
 component_num = 7 #隐藏状态数目
 mix_num = 3
 iter_num = 10
-
+for_num= 20
 for filename in filename_list:
     in_dir = 'E://read-allquestion/hou_shu_01/'+filename+'.tsv'
     print("in_dir")
@@ -525,7 +525,7 @@ model.means_ =pre_means_  #赋值初始均值矩阵???
 #model.covars_ = pre_covs_
 
 #在迭代过程中将点归回预先定义的AOI中,GMM
-for i in range(10): #迭代次数
+for i in range(for_num): #迭代次数
     model.fit(X_all, lengths)  # 拟合函数
     print("均值矩阵")
     print(model.means_)
