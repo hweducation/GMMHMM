@@ -159,7 +159,7 @@ img = cv2.resize(orin_img, (width, height))
 #
 #数据处理 ， 默认丢弃含有缺失值的行
 filename_list = ['Project63-57 Recording23','Project63-57 Recording24','Project63-57 Recording28',
-          'Project63-57 Recording30','Project63-57 Recording32',
+          'Project63-57 Recording30','Project63-57 Recording32','Project63-57 Recording63',
           'Project77-70 Recording18','Project77-70 Recording25','Project77-70 Recording26',
           'Project77-70 Recording31','Project77-70 Recording46','Project77-70 Recording70']
 #filename_list = ['Project77-70 Recording46']#, 'Project77-70 Recording70'
@@ -168,7 +168,7 @@ X_all = []#二维
 pre_means_all = []
 pre_covs_all = []
 lengths = []
-component_num = 15 #隐藏状态数目
+component_num = 40 #隐藏状态数目
 mix_num = 3
 def make_ellipses(mean, cov, ax, confidence=5.991, alpha=0.3, color="blue", eigv=False, arrow_color_list=None):
     """
@@ -230,15 +230,19 @@ for filename in filename_list:
     print("原始数据的大小：", df.shape)
     #print("原始数据的列名", df.columns)
 
-    df.dropna(subset=['Gaze point X [MCS px]','Gaze point Y [MCS px]'], inplace = True)
+    df.dropna(subset=['Fixation point X [MCS px]','Fixation point Y [MCS px]'], inplace = True)
 
-    gazeX = df['Gaze point X [MCS px]']
-    gazeY = df['Gaze point Y [MCS px]']
-
+    gazeX = df['Fixation point X [MCS px]']
+    gazeY = df['Fixation point Y [MCS px]']
+    print("gazeX")
+    print(gazeX)
 
     #获得输入数据,数据归一化
     X = np.column_stack([gazeX/width, gazeY/height])
     print("输入数据的大小：", X.shape)   #(1504, 2)
+
+    if X == []:
+        continue
     #清洗数据，删掉超出屏幕范围的数据
     X_clear = []
     for i,element in enumerate(X):
@@ -246,113 +250,113 @@ for filename in filename_list:
         if element[0]>=0 and element[0]<=width and element[1]>=0 and element[1]<=height:
             X_clear.append(element)
     X = np.array(X_clear)
-
-    print("清洗后输入数据的大小：", X.shape)   #(1504, 2)
-    # #计算均值和协方差
-    # for x in X:
-    #     if
-
-    #X.T
-    #[[ 899.  893.  899.  896.  930.  926.  927.  948.  938.  918.  879.  887.]
-    # [1229. 1105. 1140. 1187. 1099. 1111. 1153. 1107. 1103. 1063.  929.  967.]]
-
-    X0 = []
-    X1 = []
-    X2 = []
-    X3 = []
-    X4 = []
-    X5 = []
-    X6 = []
-
-    for i, element in enumerate(X):
-        print(i, element)
-        print("在哪个AOI中")
-        if in_which_AOI2(element[0],element[1])==0:
-            X0.append(element)
-        elif in_which_AOI2(element[0],element[1])==1:
-            X1.append(element)
-        elif in_which_AOI2(element[0],element[1])==2:
-            X2.append(element)
-        elif in_which_AOI2(element[0],element[1])==3:
-            X3.append(element)
-        elif in_which_AOI2(element[0],element[1])==4:
-            X4.append(element)
-        elif in_which_AOI2(element[0],element[1])==5:
-            X5.append(element)
-        elif in_which_AOI2(element[0],element[1])==6:
-            X6.append(element)
-
-    X0 = np.array(X0)
-    X1 = np.array(X1)
-    X2 = np.array(X2)
-    X3 = np.array(X3)
-    X4 = np.array(X4)
-    X5 = np.array(X5)
-    X6 = np.array(X6)
-
-    print("X0")
-    print(X0)
-    print("X1")
-    print(X1)
-    print("X2")
-    print(X2)
-
-    # print("X.T")
-    # print(X.T)
-    cov_X0 = np.cov(X0.T)
-    print("协方差X0")
-    print(cov_X0)
-    mean_X0 = np.mean(X0.T ,axis=1)
-    print("均值X0")
-    print(mean_X0)
-
-
-    cov_X1 = np.cov(X1.T)
-    print("协方差X1")
-    print(cov_X1)
-    mean_X1 = np.mean(X1.T ,axis=1)
-    print("均值X1")
-    print(mean_X1)
-
-
-    cov_X2 = np.cov(X2.T)
-    print("协方差X2")
-    print(cov_X2)
-    mean_X2 = np.mean(X2.T ,axis=1)
-    print("均值X2")
-    print(mean_X2)
-
-
-    cov_X3 = np.cov(X3.T)
-    print("协方差X3")
-    print(cov_X3)
-    mean_X3 = np.mean(X3.T ,axis=1)
-    print("均值X3")
-    print(mean_X3)
-
-
-    cov_X4 = np.cov(X4.T)
-    print("协方差X4")
-    print(cov_X4)
-    mean_X4 = np.mean(X4.T ,axis=1)
-    print("均值X4")
-    print(mean_X4)
-
-
-    cov_X5 = np.cov(X5.T)
-    print("协方差X5")
-    print(cov_X5)
-    mean_X5 = np.mean(X5.T ,axis=1)
-    print("均值X5")
-    print(mean_X5)
-
-
-    cov_X6 = np.cov(X6.T)
-    print("协方差X6")
-    print(cov_X6)
-    mean_X6 = np.mean(X6.T ,axis=1)
-    print("均值X6")
-    print(mean_X6)
+    #
+    # print("清洗后输入数据的大小：", X.shape)   #(1504, 2)
+    # # #计算均值和协方差
+    # # for x in X:
+    # #     if
+    #
+    # #X.T
+    # #[[ 899.  893.  899.  896.  930.  926.  927.  948.  938.  918.  879.  887.]
+    # # [1229. 1105. 1140. 1187. 1099. 1111. 1153. 1107. 1103. 1063.  929.  967.]]
+    #
+    # X0 = []
+    # X1 = []
+    # X2 = []
+    # X3 = []
+    # X4 = []
+    # X5 = []
+    # X6 = []
+    #
+    # for i, element in enumerate(X):
+    #     print(i, element)
+    #     print("在哪个AOI中")
+    #     if in_which_AOI2(element[0],element[1])==0:
+    #         X0.append(element)
+    #     elif in_which_AOI2(element[0],element[1])==1:
+    #         X1.append(element)
+    #     elif in_which_AOI2(element[0],element[1])==2:
+    #         X2.append(element)
+    #     elif in_which_AOI2(element[0],element[1])==3:
+    #         X3.append(element)
+    #     elif in_which_AOI2(element[0],element[1])==4:
+    #         X4.append(element)
+    #     elif in_which_AOI2(element[0],element[1])==5:
+    #         X5.append(element)
+    #     elif in_which_AOI2(element[0],element[1])==6:
+    #         X6.append(element)
+    #
+    # X0 = np.array(X0)
+    # X1 = np.array(X1)
+    # X2 = np.array(X2)
+    # X3 = np.array(X3)
+    # X4 = np.array(X4)
+    # X5 = np.array(X5)
+    # X6 = np.array(X6)
+    #
+    # print("X0")
+    # print(X0)
+    # print("X1")
+    # print(X1)
+    # print("X2")
+    # print(X2)
+    #
+    # # print("X.T")
+    # # print(X.T)
+    # cov_X0 = np.cov(X0.T)
+    # print("协方差X0")
+    # print(cov_X0)
+    # mean_X0 = np.mean(X0.T ,axis=1)
+    # print("均值X0")
+    # print(mean_X0)
+    #
+    #
+    # cov_X1 = np.cov(X1.T)
+    # print("协方差X1")
+    # print(cov_X1)
+    # mean_X1 = np.mean(X1.T ,axis=1)
+    # print("均值X1")
+    # print(mean_X1)
+    #
+    #
+    # cov_X2 = np.cov(X2.T)
+    # print("协方差X2")
+    # print(cov_X2)
+    # mean_X2 = np.mean(X2.T ,axis=1)
+    # print("均值X2")
+    # print(mean_X2)
+    #
+    #
+    # cov_X3 = np.cov(X3.T)
+    # print("协方差X3")
+    # print(cov_X3)
+    # mean_X3 = np.mean(X3.T ,axis=1)
+    # print("均值X3")
+    # print(mean_X3)
+    #
+    #
+    # cov_X4 = np.cov(X4.T)
+    # print("协方差X4")
+    # print(cov_X4)
+    # mean_X4 = np.mean(X4.T ,axis=1)
+    # print("均值X4")
+    # print(mean_X4)
+    #
+    #
+    # cov_X5 = np.cov(X5.T)
+    # print("协方差X5")
+    # print(cov_X5)
+    # mean_X5 = np.mean(X5.T ,axis=1)
+    # print("均值X5")
+    # print(mean_X5)
+    #
+    #
+    # cov_X6 = np.cov(X6.T)
+    # print("协方差X6")
+    # print(cov_X6)
+    # mean_X6 = np.mean(X6.T ,axis=1)
+    # print("均值X6")
+    # print(mean_X6)
 
     # #异常值的处理
     # min = X.mean(axis=0)[0] - 8*X.std(axis=0)[0]   #最小值
@@ -367,16 +371,16 @@ for filename in filename_list:
     #模型的构建
     #数据集的划分
     #模型的搭建
-    pre_means_ = [mean_X0, mean_X1, mean_X2, mean_X3, mean_X4, mean_X5, mean_X6]
-    pre_covs_ = [cov_X0, cov_X1, cov_X2, cov_X3, cov_X4, cov_X5, cov_X6]
-    pre_covs_ = np.array(pre_covs_)
+    # pre_means_ = [mean_X0, mean_X1, mean_X2, mean_X3, mean_X4, mean_X5, mean_X6]
+    # pre_covs_ = [cov_X0, cov_X1, cov_X2, cov_X3, cov_X4, cov_X5, cov_X6]
+    # pre_covs_ = np.array(pre_covs_)
     #X 接在X_all后面
     X_all += X
     X_sum.append(X)#三维数组，目的是后期根据观测序列运行Viterbi
     #多序列的均值和方差如何设置
     # pre_means_all += pre_means_
     # pre_means_all.append(pre_means_)
-    pre_covs_all.append(pre_covs_)
+    # pre_covs_all.append(pre_covs_)
     lengths.append(len(X))
 
 print("X_all")
@@ -395,11 +399,11 @@ print(lengths)
 
 print("X_sum")
 print(X_sum)
-model = GaussianHMM(n_components=component_num, covariance_type='full', n_iter=20, verbose=True, init_params='st') #'stmcw'
-stable_means =[[958/width,84/height],[725/width,504/height],[959/width,504/height],
-               [887/width,595/height],[1343/width,610/height],[617/width,788/height],
-               [1072/width,801/height], [979/width,710/height],[587/width,865/height],
-               [1065/width,857/height],[522/width,941/height],[1095/width,942/height]]
+model = GaussianHMM(n_components=component_num, covariance_type='full', n_iter=200, verbose=True, init_params='st') #'stmcw'
+# stable_means =[[958/width,84/height],[725/width,504/height],[959/width,504/height],
+#                [887/width,595/height],[1343/width,610/height],[617/width,788/height],
+#                [1072/width,801/height], [979/width,710/height],[587/width,865/height],
+#                [1065/width,857/height],[522/width,941/height],[1095/width,942/height]]
 # stable_means = np.array(stable_means)
 #
 # model.means_ = stable_means
@@ -646,7 +650,7 @@ cv2.imwrite(target_file1, img)
 # print(model.transmat_)
 #
 #
-# #拟合观测序列
+#拟合观测序列
 # O_seq = np.array(X_sum[0])
 # print("O_seq")
 # print(O_seq)
