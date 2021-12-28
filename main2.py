@@ -14,10 +14,10 @@ from hmmlearn.hmm import *
 from sklearn.mixture import GaussianMixture
 
 component_num = 6 #隐藏状态数目
-mix_num = 4
+mix_num = 3
 iter_num = 10
 for_num = 10
-
+question_name='hou_shu_01'
 #将拟合后的均值画在原始背景图上面，设置一些路径等参数
 in_file = 'background.jpg'
 # target_file = 'out/'+filename+'.png'
@@ -234,7 +234,7 @@ X4 = []
 X5 = []
 X6 = []
 for filename in filename_list:
-    in_dir = 'E://read-allquestion/hou_shu_01/'+filename+'.tsv'
+    in_dir = 'E://read-allquestion/'+question_name+'/'+filename+'.tsv'
     print("in_dir")
     print(in_dir)
     df = pd.read_csv(in_dir, sep='\t', header=0)
@@ -374,7 +374,7 @@ print(X2)
 # diagram2 = [diagramx2,diagramy2]
 # diagram3 = [diagramx3,diagramy3]
 # mean_X0 = [diagram1,diagram2,diagram3]
-gm0 = GaussianMixture(n_components=mix_num, random_state=0).fit(X0)
+gm0 = GaussianMixture(n_components=mix_num, random_state=0, covariance_type='full').fit(X0)#,covariance_type='full'
 print("gm0.means_")
 print(gm0.means_)
 mean_X0 = gm0.means_
@@ -405,7 +405,7 @@ print(cov_X0)
 # optionA3 = [optionAx3,optionAy3]
 # mean_X1 = [optionA1,optionA2,optionA3]
 
-gm1 = GaussianMixture(n_components=mix_num, random_state=0).fit(X1)
+gm1 = GaussianMixture(n_components=mix_num, random_state=0, covariance_type='full').fit(X1)
 print("gm1.means_")
 print(gm1.means_)
 mean_X1 = gm1.means_
@@ -438,7 +438,7 @@ print(mean_X1)
 # optionB3 = [optionBx3,optionBy3]
 # mean_X2 = [optionB1,optionB2,optionB3]
 
-gm2 = GaussianMixture(n_components=mix_num, random_state=0).fit(X2)
+gm2 = GaussianMixture(n_components=mix_num, random_state=0, covariance_type='full').fit(X2)
 print("gm1.means_")
 print(gm2.means_)
 mean_X2 = gm2.means_
@@ -471,7 +471,7 @@ print(mean_X2)
 # optionC3 = [optionCx3,optionCy3]
 # mean_X3 = [optionC1,optionC2,optionC3]
 
-gm3 = GaussianMixture(n_components=mix_num, random_state=0).fit(X3)
+gm3 = GaussianMixture(n_components=mix_num, random_state=0, covariance_type='full').fit(X3)
 print("gm1.means_")
 print(gm3.means_)
 mean_X3 = gm3.means_
@@ -504,7 +504,7 @@ print(mean_X3)
 # optionD3 = [optionDx3,optionDy3]
 # mean_X4 = [optionD1,optionD2,optionD3]
 
-gm4 = GaussianMixture(n_components=mix_num, random_state=0).fit(X4)
+gm4 = GaussianMixture(n_components=mix_num, random_state=0, covariance_type='full').fit(X4)
 print("gm1.means_")
 print(gm4.means_)
 mean_X4 = gm4.means_
@@ -537,7 +537,7 @@ print(mean_X4)
 # stament3 = [stamentx3,stamenty3]
 # mean_X4 = [stament1,stament2,stament3]
 
-gm5 = GaussianMixture(n_components=mix_num, random_state=0).fit(X5)
+gm5 = GaussianMixture(n_components=mix_num, random_state=0, covariance_type='full').fit(X5)#, covariance_type='full'
 print("gm1.means_")
 print(gm5.means_)
 mean_X5 = gm5.means_
@@ -553,19 +553,26 @@ print(mean_X5)
 pre_means_ = [mean_X0, mean_X1, mean_X2, mean_X3, mean_X4, mean_X5]  # , mean_X6
 pre_covs_ = [cov_X0, cov_X1, cov_X2, cov_X3, cov_X4, cov_X5]  # , cov_X6
 pre_weight_ = [weight_X0, weight_X1, weight_X2, weight_X3, weight_X4, weight_X5]
+pre_means_ = np.array(pre_means_)
 pre_weight_ = np.array(pre_weight_)
 pre_covs_ = np.array(pre_covs_)
 
+print("pre_means_")
+print(pre_means_)
+
+
+print("pre_covs_")
+print(pre_covs_)
 #看一下初始值 高斯混合输出图片
 for i in range(component_num):
     for j in range(mix_num):
         #x_y = (model.means_[i][0], model.means_[i][1])
         cv2.circle(imgini, (int(pre_means_[i][j][0]*width), int(pre_means_[i][j][1]*height)), 5, (0, 0, 255), -1)
-        cv2.putText(imgini, str(i), (int(pre_means_[i][j][0]*width), int(pre_means_[i][j][1]*height)), cv2.FONT_ITALIC, 0.9, (210, 50, 220), 2, cv2.LINE_AA)
+        cv2.putText(imgini, str(i)+str(j), (int(pre_means_[i][j][0]*width), int(pre_means_[i][j][1]*height)), cv2.FONT_ITALIC, 0.9, (210, 50, 220), 2, cv2.LINE_AA)
 cv2.imwrite(ini_file, imgini)
 
 
-#输出置信度是0.95的高斯混合模型，需要归一化
+#ini 输出置信度是0.95的高斯混合模型，需要归一化
 plt.rcParams["figure.figsize"] = (10.0, 10.0)
 fig, ax = plt.subplots()
 ax.set_xlabel("x")
@@ -578,7 +585,7 @@ for i in range(component_num):
     for j in range(mix_num):
         make_ellipses(pre_means_[i][j], pre_covs_[i][j], ax, confidence=confidence, color=color, alpha=alpha, eigv=eigv)
 
-plt.savefig('out/ini_gaussian_covariance_matrix.png')
+plt.savefig('out/init_gaussian_covariance_matrix.png')
 #plt.savefig("/out/gaussian_covariance_matrix.png")
 #plt.show()
 
@@ -701,15 +708,14 @@ for i in range(component_num):
     for j in range(mix_num):
         #x_y = (model.means_[i][0], model.means_[i][1])
         cv2.circle(img, (int(model.means_[i][j][0]*width), int(model.means_[i][j][1]*height)), 5, (0, 0, 255), -1)
-        cv2.putText(img, str(i), (int(model.means_[i][j][0]*width), int(model.means_[i][j][1]*height)), cv2.FONT_ITALIC, 0.9, (210, 50, 220), 2, cv2.LINE_AA)
-
+        cv2.putText(img, str(i)+str(j), (int(model.means_[i][j][0]*width), int(model.means_[i][j][1]*height)), cv2.FONT_ITALIC, 0.9, (210, 50, 220), 2, cv2.LINE_AA)
+cv2.imwrite(target_file1, img)
 # # 单高斯输出图片
 # for i in range(component_num):
 #     #x_y = (model.means_[i][0], model.means_[i][1])
 #     cv2.circle(img, (int(model.means_[i][0]*width), int(model.means_[i][1]*height)), 5, (0, 0, 255), -1)
 #     cv2.putText(img, str(i), (int(model.means_[i][0]*width), int(model.means_[i][1]*height)), cv2.FONT_ITALIC, 0.9, (210, 50, 220), 2, cv2.LINE_AA)
-
-cv2.imwrite(target_file1, img)
+# cv2.imwrite(target_file1, img)
 
 # model.means_ = pre_means_all #赋值初始矩阵
 #
@@ -772,7 +778,7 @@ cv2.imwrite(target_file1, img)
 # #     for j in range(mix_num):
 # #         #x_y = (model.means_[i][0], model.means_[i][1])
 # #         cv2.circle(img, (int(model.means_[i][j][0]*width), int(model.means_[i][j][1]*height)), 5, (0, 0, 255), -1)
-# #         cv2.putText(img, str(i), (int(model.means_[i][j][0]*width), int(model.means_[i][j][1]*height)), cv2.FONT_ITALIC, 0.9, (210, 50, 220), 2, cv2.LINE_AA)
+# #         cv2.putText(img, str(i)+str(j), (int(model.means_[i][j][0]*width), int(model.means_[i][j][1]*height)), cv2.FONT_ITALIC, 0.9, (210, 50, 220), 2, cv2.LINE_AA)
 #
 # cv2.imwrite(target_file, img)
 #
@@ -792,3 +798,44 @@ cv2.imwrite(target_file1, img)
 # plt.savefig('out/gaussian_covariance_matrix.png')
 # #plt.savefig("/out/gaussian_covariance_matrix.png")
 # #plt.show()
+
+#输出置信度是0.95的高斯混合模型，需要归一化
+plt.rcParams["figure.figsize"] = (10.0, 10.0)
+fig, ax = plt.subplots()
+ax.set_xlabel("x")
+ax.set_ylabel("y")
+confidence = 5.991
+color = "blue"
+alpha = 0.3
+eigv = False
+for i in range(component_num):
+    for j in range(mix_num):
+        make_ellipses(model.means_[i][j], model.covars_[i][j], ax, confidence=confidence, color=color, alpha=alpha, eigv=eigv)
+
+plt.savefig('out/iter10_gaussian_covariance_matrix.png')
+
+
+print("model.transmat_")
+print(model.transmat_)
+print("model.weights_")
+print(model.weights_)
+
+
+
+# state_sequence0 = model.predict(np.array(X_sum[0]), lengths=None)
+# print("state_sequence0")
+# print(state_sequence0) #预测第0个人最可能的隐藏状态
+# np.savetxt('out/state_sequence0.txt', state_sequence0, fmt="%.3f", delimiter=',') #保存为3位小数的浮点数，用逗号分隔
+#
+#
+# state_sequence1 = model.predict(np.array(X_sum[1]), lengths=None)
+# print("state_sequence1")
+# print(state_sequence1) #预测第1个人最可能的隐藏状态
+# np.savetxt('out/state_sequence1.txt', state_sequence1, fmt="%.3f", delimiter=',') #保存为3位小数的浮点数，用逗号分隔
+
+np.savetxt('out/state_sequence0.txt', model.predict(np.array(X_sum[0]), lengths=None), fmt="%d", delimiter=',')
+np.savetxt('out/state_sequence1.txt', model.predict(np.array(X_sum[1]), lengths=None), fmt="%d", delimiter=',')
+np.savetxt('out/state_sequence2.txt', model.predict(np.array(X_sum[2]), lengths=None), fmt="%d", delimiter=',')
+np.savetxt('out/state_sequence3.txt', model.predict(np.array(X_sum[3]), lengths=None), fmt="%d", delimiter=',')
+np.savetxt('out/state_sequence4.txt', model.predict(np.array(X_sum[4]), lengths=None), fmt="%d", delimiter=',')
+np.savetxt('out/state_sequence5.txt', model.predict(np.array(X_sum[5]), lengths=None), fmt="%d", delimiter=',')
