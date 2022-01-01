@@ -22,10 +22,10 @@ question_name = 'hou_shu_01'
 #将拟合后的均值画在原始背景图上面，设置一些路径等参数
 in_file = 'background.jpg'
 # target_file = 'out/'+filename+'.png'
-target_file1 = 'out/filemeansGMM-new7.png'
+target_file1 = 'out/filemeansGMM-new8.png'
 ini_file = 'out/inifilemeansGMM.png'
 cov_ini_file = 'out/init_gaussian_covariance_matrix.png'
-cov_file = 'out/init_gaussian_covariance_matrix.png'
+cov_file = 'out/gaussian_covariance_matrix.png'
 modle_file = 'out/hmmmodel.pkl'
 
 
@@ -179,7 +179,8 @@ timestamp_sum = []#二维[[2333,2345,3214,...],[5333,5345,5214,...],...]
 pre_means_all = []
 pre_covs_all = []
 lengths = []
-def make_ellipses(mean, cov, ax, confidence=5.991, alpha=0.3, color="blue", eigv=False, arrow_color_list=None):
+#["red","blue","green","yellow","pink","black"]
+def make_ellipses(str, mean, cov, ax, confidence=5.991, alpha=0.3, color="blue", eigv=True, arrow_color_list=None):
     """
     多元正态分布
     mean: 均值
@@ -224,10 +225,10 @@ def make_ellipses(mean, cov, ax, confidence=5.991, alpha=0.3, color="blue", eigv
                      )
             """
             ax.arrow(mean[0], mean[1], scale_variable*v_i[0], scale_variable * v_i[1],
-                     width=0.05,
+                     width=0.005,
                      length_includes_head=True,
-                     head_width=0.2,
-                     head_length=0.3,
+                     head_width=0.02,
+                     head_length=0.03,
                      color=arrow_color_list[i])
 #'Project63-57 Recording63',
 
@@ -590,15 +591,17 @@ plt.rcParams["figure.figsize"] = (10.0, 10.0)
 fig, ax = plt.subplots()
 ax.set_xlabel("x")
 ax.set_ylabel("y")
+ax.grid(color='r', ls='dashed', lw=0.5, alpha=0.5) # 设置网格
 confidence = 5.991
 color = "red"
 alpha = 0.3
-eigv = False
+eigv = True
 for i in range(component_num):
     for j in range(mix_num):
-        make_ellipses(pre_means_[i][j], pre_covs_[i][j], ax, confidence=confidence, color=color, alpha=alpha, eigv=eigv)
+        make_ellipses(str(i)+str(j), pre_means_[i][j], pre_covs_[i][j], ax, confidence=confidence, color=color, alpha=alpha, eigv=eigv)
 
 plt.savefig(cov_ini_file)
+
 #plt.savefig("/out/gaussian_covariance_matrix.png")
 #plt.show()
 
@@ -826,12 +829,13 @@ ax.set_ylabel("y")
 confidence = 5.991
 color = "blue"
 alpha = 0.3
-eigv = False
+eigv = True
 for i in range(component_num):
     for j in range(mix_num):
-        make_ellipses(model.means_[i][j], model.covars_[i][j], ax, confidence=confidence, color=color, alpha=alpha, eigv=eigv)
+        make_ellipses(str(i)+str(j), model.means_[i][j], model.covars_[i][j], ax, confidence=confidence, color=color, alpha=alpha, eigv=eigv)
 
 plt.savefig(cov_file)
+plt.show()
 
 
 print("model.transmat_")
