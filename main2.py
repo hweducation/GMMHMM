@@ -835,7 +835,7 @@ for i in range(component_num):
         make_ellipses(str(i)+str(j), model.means_[i][j], model.covars_[i][j], ax, confidence=confidence, color=color, alpha=alpha, eigv=eigv)
 
 plt.savefig(cov_file)
-plt.show()
+#plt.show()
 
 
 print("model.transmat_")
@@ -853,7 +853,7 @@ print(model.weights_)
 # print("state_sequence1")
 # print(state_sequence1) #预测第1个人最可能的隐藏状态
 # np.savetxt('out/state_sequence1.txt', state_sequence1, fmt="%.3f", delimiter=',') #保存为3位小数的浮点数，用逗号分隔
-
+sequence_sum=[]
 #按照timestamp,AOI的形式打印
 Sequence0 = model.predict(np.array(X_sum[0]), lengths=None)
 timestamp_AOI0 = np.column_stack([timestamp_sum[0], Sequence0])
@@ -902,6 +902,37 @@ np.savetxt('out/state_sequence10.txt', timestamp_AOI10, fmt="%d", delimiter=',')
 Sequence11 = model.predict(np.array(X_sum[11]), lengths=None)
 timestamp_AOI11 = np.column_stack([timestamp_sum[11], Sequence11])
 np.savetxt('out/state_sequence11.txt', timestamp_AOI11, fmt="%d", delimiter=',')
+
+sequence_sum.append(Sequence0)
+sequence_sum.append(Sequence1)
+sequence_sum.append(Sequence2)
+sequence_sum.append(Sequence3)
+sequence_sum.append(Sequence4)
+sequence_sum.append(Sequence5)
+sequence_sum.append(Sequence6)
+sequence_sum.append(Sequence7)
+sequence_sum.append(Sequence8)
+sequence_sum.append(Sequence9)
+sequence_sum.append(Sequence10)
+sequence_sum.append(Sequence11)
+
+#将点打印在图上面，每个状态一个颜色
+# colors = ["blue","black","brown","red","yellow","green","orange","beige","turquoise","pink"]
+#蓝，绿，红
+colors = [(255,0,0),(0,255,0),(0,0,255),(0,255,255),(255,0,255),(255,255,0),(125,0,255)]
+#每个人的数据
+for i in range(len(X_sum)):
+    #每个人序列的xy坐标
+    for j in range(len(X_sum[i])):
+        #状态值
+        s = sequence_sum[i][j]
+        if s==2:
+            #画点
+            cv2.circle(img=img, center=(int(X_sum[i][j][0]*width), int(X_sum[i][j][1]*height)), radius=5, color=colors[s])
+        #cv2.circle(img=img, center=(int(X_sum[i][j][0]*width), int(X_sum[i][j][1]*height)), radius=4, color=colors[s])
+
+cv2.imwrite(target_file1, img)
+
 
 
 output_hal = open(modle_file, 'wb')
