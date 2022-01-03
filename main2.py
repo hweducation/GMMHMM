@@ -19,8 +19,9 @@ mix_num = 4
 iter_num = 100
 for_num = 1
 question_name = 'hou_shu_01'
+in_background_file = 'background/'+question_name+'.jpg'
+in_AOI_point = 'AOI_pixel'
 #将拟合后的均值画在原始背景图上面，设置一些路径等参数
-in_file = 'background.jpg'
 # target_file = 'out/'+filename+'.png'
 target_file1 = 'out/filemeansGMM-new9.png'
 ini_file = 'out/inifilemeansGMM.png'
@@ -163,7 +164,7 @@ def to_edge(x, y, index):  # 将跑出AOI的点归到边缘
     return [new_x/width, new_y/height]
 
 
-orin_img = cv2.imread(in_file)
+orin_img = cv2.imread(in_background_file)
 img = cv2.resize(orin_img, (width, height))
 imgini = cv2.resize(orin_img, (width, height))
 #
@@ -869,66 +870,72 @@ print(model.weights_)
 # np.savetxt('out/state_sequence1.txt', state_sequence1, fmt="%.3f", delimiter=',') #保存为3位小数的浮点数，用逗号分隔
 sequence_sum=[]
 #按照timestamp,AOI的形式打印
-Sequence0 = model.predict(np.array(X_sum[0]), lengths=None)
-timestamp_AOI0 = np.column_stack([timestamp_sum[0], Sequence0])
-np.savetxt('out/state_sequence0.txt', timestamp_AOI0, fmt="%d", delimiter=',')
+for i in range(len(filename_list)):
+    Sequence = model.predict(np.array(X_sum[i]), lengths=None)
+    timestamp_AOI = np.column_stack([timestamp_sum[i], Sequence])
+    out_file_name = 'out/'+filename_list[i]+'.txt'
+    np.savetxt(out_file_name, timestamp_AOI, fmt="%d", delimiter=',')
+    sequence_sum.append(Sequence)
+#
+# Sequence0 = model.predict(np.array(X_sum[0]), lengths=None)
+# timestamp_AOI0 = np.column_stack([timestamp_sum[0], Sequence0])
+# np.savetxt('out/state_sequence0.txt', timestamp_AOI0, fmt="%d", delimiter=',')
+#
+# Sequence1 = model.predict(np.array(X_sum[1]), lengths=None)
+# timestamp_AOI1 = np.column_stack([timestamp_sum[1], Sequence1])
+# np.savetxt('out/state_sequence1.txt', timestamp_AOI1, fmt="%d", delimiter=',')
+#
+# Sequence2 = model.predict(np.array(X_sum[2]), lengths=None)
+# timestamp_AOI2 = np.column_stack([timestamp_sum[2], Sequence2])
+# np.savetxt('out/state_sequence2.txt', timestamp_AOI2, fmt="%d", delimiter=',')
+#
+# Sequence3 = model.predict(np.array(X_sum[3]), lengths=None)
+# timestamp_AOI3 = np.column_stack([timestamp_sum[3], Sequence3])
+# np.savetxt('out/state_sequence3.txt', timestamp_AOI3, fmt="%d", delimiter=',')
+#
+# Sequence4 = model.predict(np.array(X_sum[4]), lengths=None)
+# timestamp_AOI4 = np.column_stack([timestamp_sum[4], Sequence4])
+# np.savetxt('out/state_sequence4.txt', timestamp_AOI4, fmt="%d", delimiter=',')
+#
+# Sequence5 = model.predict(np.array(X_sum[5]), lengths=None)
+# timestamp_AOI5 = np.column_stack([timestamp_sum[5], Sequence5])
+# np.savetxt('out/state_sequence5.txt', timestamp_AOI5, fmt="%d", delimiter=',')
+#
+# Sequence6 = model.predict(np.array(X_sum[6]), lengths=None)
+# timestamp_AOI6 = np.column_stack([timestamp_sum[6], Sequence6])
+# np.savetxt('out/state_sequence6.txt', timestamp_AOI6, fmt="%d", delimiter=',')
+#
+# Sequence7 = model.predict(np.array(X_sum[7]), lengths=None)
+# timestamp_AOI7 = np.column_stack([timestamp_sum[7], Sequence7])
+# np.savetxt('out/state_sequence7.txt', timestamp_AOI7, fmt="%d", delimiter=',')
+#
+# Sequence8 = model.predict(np.array(X_sum[8]), lengths=None)
+# timestamp_AOI8 = np.column_stack([timestamp_sum[8], Sequence8])
+# np.savetxt('out/state_sequence8.txt', timestamp_AOI8, fmt="%d", delimiter=',')
+#
+# Sequence9 = model.predict(np.array(X_sum[9]), lengths=None)
+# timestamp_AOI9 = np.column_stack([timestamp_sum[9], Sequence9])
+# np.savetxt('out/state_sequence9.txt', timestamp_AOI9, fmt="%d", delimiter=',')
+#
+# Sequence10 = model.predict(np.array(X_sum[10]), lengths=None)
+# timestamp_AOI10 = np.column_stack([timestamp_sum[10], Sequence10])
+# np.savetxt('out/state_sequence10.txt', timestamp_AOI10, fmt="%d", delimiter=',')
+#
+# Sequence11 = model.predict(np.array(X_sum[11]), lengths=None)
+# timestamp_AOI11 = np.column_stack([timestamp_sum[11], Sequence11])
+# np.savetxt('out/state_sequence11.txt', timestamp_AOI11, fmt="%d", delimiter=',')
 
-Sequence1 = model.predict(np.array(X_sum[1]), lengths=None)
-timestamp_AOI1 = np.column_stack([timestamp_sum[1], Sequence1])
-np.savetxt('out/state_sequence1.txt', timestamp_AOI1, fmt="%d", delimiter=',')
-
-Sequence2 = model.predict(np.array(X_sum[2]), lengths=None)
-timestamp_AOI2 = np.column_stack([timestamp_sum[2], Sequence2])
-np.savetxt('out/state_sequence2.txt', timestamp_AOI2, fmt="%d", delimiter=',')
-
-Sequence3 = model.predict(np.array(X_sum[3]), lengths=None)
-timestamp_AOI3 = np.column_stack([timestamp_sum[3], Sequence3])
-np.savetxt('out/state_sequence3.txt', timestamp_AOI3, fmt="%d", delimiter=',')
-
-Sequence4 = model.predict(np.array(X_sum[4]), lengths=None)
-timestamp_AOI4 = np.column_stack([timestamp_sum[4], Sequence4])
-np.savetxt('out/state_sequence4.txt', timestamp_AOI4, fmt="%d", delimiter=',')
-
-Sequence5 = model.predict(np.array(X_sum[5]), lengths=None)
-timestamp_AOI5 = np.column_stack([timestamp_sum[5], Sequence5])
-np.savetxt('out/state_sequence5.txt', timestamp_AOI5, fmt="%d", delimiter=',')
-
-Sequence6 = model.predict(np.array(X_sum[6]), lengths=None)
-timestamp_AOI6 = np.column_stack([timestamp_sum[6], Sequence6])
-np.savetxt('out/state_sequence6.txt', timestamp_AOI6, fmt="%d", delimiter=',')
-
-Sequence7 = model.predict(np.array(X_sum[7]), lengths=None)
-timestamp_AOI7 = np.column_stack([timestamp_sum[7], Sequence7])
-np.savetxt('out/state_sequence7.txt', timestamp_AOI7, fmt="%d", delimiter=',')
-
-Sequence8 = model.predict(np.array(X_sum[8]), lengths=None)
-timestamp_AOI8 = np.column_stack([timestamp_sum[8], Sequence8])
-np.savetxt('out/state_sequence8.txt', timestamp_AOI8, fmt="%d", delimiter=',')
-
-Sequence9 = model.predict(np.array(X_sum[9]), lengths=None)
-timestamp_AOI9 = np.column_stack([timestamp_sum[9], Sequence9])
-np.savetxt('out/state_sequence9.txt', timestamp_AOI9, fmt="%d", delimiter=',')
-
-Sequence10 = model.predict(np.array(X_sum[10]), lengths=None)
-timestamp_AOI10 = np.column_stack([timestamp_sum[10], Sequence10])
-np.savetxt('out/state_sequence10.txt', timestamp_AOI10, fmt="%d", delimiter=',')
-
-Sequence11 = model.predict(np.array(X_sum[11]), lengths=None)
-timestamp_AOI11 = np.column_stack([timestamp_sum[11], Sequence11])
-np.savetxt('out/state_sequence11.txt', timestamp_AOI11, fmt="%d", delimiter=',')
-
-sequence_sum.append(Sequence0)
-sequence_sum.append(Sequence1)
-sequence_sum.append(Sequence2)
-sequence_sum.append(Sequence3)
-sequence_sum.append(Sequence4)
-sequence_sum.append(Sequence5)
-sequence_sum.append(Sequence6)
-sequence_sum.append(Sequence7)
-sequence_sum.append(Sequence8)
-sequence_sum.append(Sequence9)
-sequence_sum.append(Sequence10)
-sequence_sum.append(Sequence11)
+# sequence_sum.append(Sequence1)
+# sequence_sum.append(Sequence2)
+# sequence_sum.append(Sequence3)
+# sequence_sum.append(Sequence4)
+# sequence_sum.append(Sequence5)
+# sequence_sum.append(Sequence6)
+# sequence_sum.append(Sequence7)
+# sequence_sum.append(Sequence8)
+# sequence_sum.append(Sequence9)
+# sequence_sum.append(Sequence10)
+# sequence_sum.append(Sequence11)
 
 #将点打印在图上面，每个状态一个颜色
 # colors = ["blue","black","brown","red","yellow","green","orange","beige","turquoise","pink"]
