@@ -200,8 +200,8 @@ for filename in filename_list:
             X4.append(element)
         elif in_which_AOI2(element[0],element[1])==5:
             X5.append(element)
-        # elif in_which_AOI2(element[0],element[1])==6:
-        #     X6.append(element)
+        elif in_which_AOI2(element[0],element[1])==6:
+            X6.append(element)
 
     X = X.tolist()
     timestamp = timestamp.tolist()
@@ -220,6 +220,7 @@ X2 = np.array(X2)
 X3 = np.array(X3)
 X4 = np.array(X4)
 X5 = np.array(X5)
+X6 = np.array(X6)
 
 gm0 = GaussianMixture(n_components=mix_num, random_state=0, covariance_type='full').fit(X0)#,covariance_type='full'
 print("gm0.means_")
@@ -297,19 +298,30 @@ print(cov_X5)
 print("mean_X5")
 print(mean_X5)
 
-pre_means_ = [mean_X0, mean_X1, mean_X2, mean_X3, mean_X4, mean_X5]  # , mean_X6
-pre_covs_ = [cov_X0, cov_X1, cov_X2, cov_X3, cov_X4, cov_X5]  # , cov_X6
-pre_weight_ = [weight_X0, weight_X1, weight_X2, weight_X3, weight_X4, weight_X5]
-pre_means_ = np.array(pre_means_)
-pre_weight_ = np.array(pre_weight_)
-pre_covs_ = np.array(pre_covs_)
+gm6 = GaussianMixture(n_components=mix_num, random_state=0, covariance_type='full').fit(X6)
+print("gm1.means_")
+print(gm6.means_)
+mean_X6 = gm6.means_
+cov_X6 = gm6.covariances_
+weight_X6 = gm6.weights_
+print("mean_X6")
+print(mean_X6)
+print("cov_X6")
+print(cov_X6)
+print("mean_X6")
+print(mean_X6)
 
+pre_means_ = [mean_X0, mean_X1, mean_X2, mean_X3, mean_X4, mean_X5, mean_X6]  #
+pre_covs_ = [cov_X0, cov_X1, cov_X2, cov_X3, cov_X4, cov_X5, cov_X6]  #
+pre_weight_ = [weight_X0, weight_X1, weight_X2, weight_X3, weight_X4, weight_X5, weight_X6]
+pre_means_ = np.array(pre_means_)
+pre_covs_ = np.array(pre_covs_)
+pre_weight_ = np.array(pre_weight_)
 print("pre_means_")
 print(pre_means_)
-
-
 print("pre_covs_")
 print(pre_covs_)
+
 #看一下初始值 高斯混合输出图片
 for i in range(component_num):
     for j in range(mix_num):
@@ -338,9 +350,58 @@ plt.savefig(cov_ini_file)
 
 X_all = np.array(X_all)
 
+gm_list = [gm0, gm1, gm2, gm3, gm4, gm5, gm6]
 # pre_means_all = np.array(pre_means_all)
 # pre_covs_all = np.array(pre_covs_all)
 # lengths = np.array(lengths)
 
 # print("X_all")
 # print(X_all)
+
+p0 = np.exp(gm_list[0].score_samples(X_sum[0]))#p(x)
+p1 = np.exp(gm_list[1].score_samples(X_sum[0]))#p(x)
+p2 = np.exp(gm_list[2].score_samples(X_sum[0]))#p(x)
+p3 = np.exp(gm_list[3].score_samples(X_sum[0]))#p(x)
+p4 = np.exp(gm_list[4].score_samples(X_sum[0]))#p(x)
+p5 = np.exp(gm_list[5].score_samples(X_sum[0]))#p(x)
+print("p")
+
+# p0 = gm_list[0].score_samples(X_sum[0])#p(x)
+# p1 = gm_list[1].score_samples(X_sum[0])#p(x)
+# p2 = gm_list[2].score_samples(X_sum[0])#p(x)
+# p3 = gm_list[3].score_samples(X_sum[0])#p(x)
+# p4 = gm_list[4].score_samples(X_sum[0])#p(x)
+# p5 = gm_list[5].score_samples(X_sum[0])#p(x)
+p_all = []
+AOI_distribute = [] #输入朱老师算法的矩阵
+for j in range(len(X_sum)):#第j个人的数据 X_sum[j]
+    a_AOI_distribute = []
+    p = []
+    # p_sum = 0
+    for i in range(component_num):#第i个高斯
+        pi = np.exp(gm_list[i].score_samples(X_sum[j]))#p(x)
+        p.append(pi)
+        #p_sum += pi
+    #     print("end")
+    # print(p)
+    p_all.append(p)
+    for i in range(len(X_sum[j])):
+        AOI_distribute_frame = [] #每一帧的AOI概率分布
+        p_sum = 0 #p(x|l)
+        for k in range(component_num):
+            p_sum += p[k][i]
+
+        for m in range(component_num):
+            AOI_distribute_frame.append(p[m][i] / p_sum)
+        a_AOI_distribute.append(AOI_distribute_frame)
+    print(j)
+
+    AOI_distribute.append(a_AOI_distribute)
+    # print(p_sum)
+
+print("AOI_distribute")
+print(AOI_distribute)
+
+#将AOI_distribute输入到文档里面作为朱老师算法输入
+for i in range(len(AOI_distribute)):
+    np.savetxt('out/'+filename_list[i]+'.txt', AOI_distribute[i], fmt="%.3f", delimiter=',')
