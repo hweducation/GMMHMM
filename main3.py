@@ -12,8 +12,10 @@ import matplotlib.pyplot as plt
 from matplotlib import cm, pyplot as plt
 from hmmlearn.hmm import *
 from sklearn.mixture import GaussianMixture
+from myUtil import *
 
-component_num = 6 #隐藏状态数目
+S = 'allquestion'
+component_num = 7 #隐藏状态数目
 mix_num = 4
 iter_num = 10
 for_num = 1
@@ -145,6 +147,44 @@ def make_ellipses(str, mean, cov, ax, confidence=5.991, alpha=0.3, color="blue",
                      color=arrow_color_list[i])
 #'Project63-57 Recording63',
 
+#从“AOI划分像素点表”文件读取数据并赋值
+def load_AOI_pixel_excel(file_path):
+    col_size = 25
+    print("begin reading eye tracker data of ", file_path)
+    eyeTrack_dict = {}
+    with open(file_path, "r", encoding="utf8", errors="ignore") as file:
+        for i, line in enumerate(file.readlines()):
+            split = line.strip("\n").split(",")
+            if len(split) != col_size:
+                print("This %d line - %s - is in the wrong format"%(i, line.strip("\n")))
+            else:
+                if split[0] == question_name:
+                    global diagram_LU, diagram_RB, optionA_LU, optionA_RB, optionB_LU, optionB_RB, \
+                        optionC_LU, optionC_RB, optionD_LU, optionD_RB, stament_LU, stament_RB, time_LU, time_RB
+                    diagram_LU = point(split[1], split[2])
+                    diagram_RB = point(split[3], split[4])
+
+                    optionA_LU = point(split[5], split[6])
+                    optionA_RB = point(split[7], split[8])
+
+                    optionB_LU = point(split[9], split[10])
+                    optionB_RB = point(split[11], split[12])
+
+                    optionC_LU = point(split[13], split[14])
+                    optionC_RB = point(split[15], split[16])
+
+                    optionD_LU = point(split[17], split[18])
+                    optionD_RB = point(split[19], split[20])
+
+                    stament_LU = point(split[21], split[22])
+                    stament_RB = point(split[23], split[24])
+
+                    time_LU = point(split[25], split[26])
+                    time_RB = point(split[27], split[28])
+
+    return eyeTrack_dict
+
+load_AOI_pixel_excel('AOI_pixel.csv')
 X0 = []
 X1 = []
 X2 = []
@@ -153,7 +193,7 @@ X4 = []
 X5 = []
 X6 = []
 for filename in filename_list:
-    in_dir = 'E://read-allquestion/'+question_name+'/'+filename+'.tsv'
+    in_dir = 'E://read-' + S + '/' + question_name + '/' + filename + '.tsv'
     print("in_dir")
     print(in_dir)
     df = pd.read_csv(in_dir, sep='\t', header=0)
@@ -364,6 +404,7 @@ p2 = np.exp(gm_list[2].score_samples(X_sum[0]))#p(x)
 p3 = np.exp(gm_list[3].score_samples(X_sum[0]))#p(x)
 p4 = np.exp(gm_list[4].score_samples(X_sum[0]))#p(x)
 p5 = np.exp(gm_list[5].score_samples(X_sum[0]))#p(x)
+p6 = np.exp(gm_list[6].score_samples(X_sum[0]))#p(x)
 print("p")
 
 # p0 = gm_list[0].score_samples(X_sum[0])#p(x)
