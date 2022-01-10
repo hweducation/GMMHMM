@@ -18,7 +18,7 @@ component_num = 7 #隐藏状态数目
 mix_num = 4
 iter_num = 100
 for_num = 1
-question_name = 'hou_shu_01'
+question_name = 'mid_shu_04'
 in_background_file = 'background/'+question_name+'.jpg'
 in_AOI_point = 'AOI_pixel'
 #将拟合后的均值画在原始背景图上面，设置一些路径等参数
@@ -28,7 +28,6 @@ ini_file = 'out/inifilemeansGMM.png'
 cov_ini_file = 'out/init_gaussian_covariance_matrix.png'
 cov_file = 'out/gaussian_covariance_matrix.png'
 modle_file = 'out/hmmmodel.pkl'
-
 
 #数学后测1
 diagram_LU = point(635, 57)
@@ -57,7 +56,6 @@ time_RB = point(1111, 665)
 
 width = 1920
 height = 1080
-
 
 # 用手动划分的AOI 初始化均值和协方差
 def in_which_AOI2(x, y):  # Statement合并
@@ -163,23 +161,6 @@ def to_edge(x, y, index):  # 将跑出AOI的点归到边缘
     print(new_y)
     return [new_x/width, new_y/height]
 
-
-orin_img = cv2.imread(in_background_file)
-img = cv2.resize(orin_img, (width, height))
-imgini = cv2.resize(orin_img, (width, height))
-#
-#数据处理 ， 默认丢弃含有缺失值的行
-filename_list = ['Project63-57 Recording23','Project63-57 Recording24','Project63-57 Recording28',
-          'Project63-57 Recording30','Project63-57 Recording32','Project63-57 Recording63',
-          'Project77-70 Recording18','Project77-70 Recording25','Project77-70 Recording26',
-          'Project77-70 Recording31','Project77-70 Recording46','Project77-70 Recording70']
-# filename_list = ['Project77-70 Recording46', 'Project77-70 Recording70']
-X_sum = []#三维
-X_all = []#二维
-timestamp_sum = []#二维[[2333,2345,3214,...],[5333,5345,5214,...],...]
-pre_means_all = []
-pre_covs_all = []
-lengths = []
 #["red","blue","green","yellow","pink","black"]
 def make_ellipses(str, mean, cov, ax, confidence=5.991, alpha=0.3, color="blue", eigv=True, arrow_color_list=None):
     """
@@ -233,6 +214,68 @@ def make_ellipses(str, mean, cov, ax, confidence=5.991, alpha=0.3, color="blue",
                      color=arrow_color_list[i])
 #'Project63-57 Recording63',
 
+#从“AOI划分像素点表”文件读取数据并赋值
+def load_AOI_pixel_excel(file_path):
+    col_size = 29
+    print("begin reading eye tracker data of ", file_path)
+    with open(file_path, "r", encoding="utf8", errors="ignore") as file:
+        for i, line in enumerate(file.readlines()):
+            if i == 0:
+                continue
+            split = line.strip("\n").split(",")
+            if len(split) != col_size:
+                print("This %d line - %s - is in the wrong format"%(i, line.strip("\n")))
+            else:
+                if split[0] == question_name:
+                    global diagram_LU, diagram_RB, optionA_LU, optionA_RB, optionB_LU, optionB_RB, \
+                        optionC_LU, optionC_RB, optionD_LU, optionD_RB, stament_LU, stament_RB, time_LU, time_RB
+
+                    for k in range(len(split)):
+                        #第一个是题目名字，转不成int
+                        if k != 0:
+                            split[k] = int(split[k])
+
+                    diagram_LU = point(split[1], split[2])
+                    diagram_RB = point(split[3], split[4])
+
+                    optionA_LU = point(split[5], split[6])
+                    optionA_RB = point(split[7], split[8])
+
+                    optionB_LU = point(split[9], split[10])
+                    optionB_RB = point(split[11], split[12])
+
+                    optionC_LU = point(split[13], split[14])
+                    optionC_RB = point(split[15], split[16])
+
+                    optionD_LU = point(split[17], split[18])
+                    optionD_RB = point(split[19], split[20])
+
+                    stament_LU = point(split[21], split[22])
+                    stament_RB = point(split[23], split[24])
+
+                    time_LU = point(split[25], split[26])
+                    time_RB = point(split[27], split[28])
+    return None
+
+load_AOI_pixel_excel('AOI_pixel.csv')
+
+orin_img = cv2.imread(in_background_file)
+img = cv2.resize(orin_img, (width, height))
+imgini = cv2.resize(orin_img, (width, height))
+#
+#数据处理 ， 默认丢弃含有缺失值的行
+filename_list = ['Project63-57 Recording23','Project63-57 Recording24','Project63-57 Recording28',
+          'Project63-57 Recording30','Project63-57 Recording32','Project63-57 Recording63',
+          'Project77-70 Recording18','Project77-70 Recording25','Project77-70 Recording26',
+          'Project77-70 Recording31','Project77-70 Recording46','Project77-70 Recording70']
+# filename_list = ['Project77-70 Recording46', 'Project77-70 Recording70']
+X_sum = []#三维
+X_all = []#二维
+timestamp_sum = []#二维[[2333,2345,3214,...],[5333,5345,5214,...],...]
+pre_means_all = []
+pre_covs_all = []
+lengths = []
+
 X0 = []
 X1 = []
 X2 = []
@@ -249,11 +292,17 @@ for filename in filename_list:
     print("原始数据的大小：", df.shape)
     #print("原始数据的列名", df.columns)
 
-    df.dropna(subset=['Recording timestamp [ms]','Gaze point X [MCS px]','Gaze point Y [MCS px]'], inplace = True)
-
-    timestamp = df['Recording timestamp [ms]']
-    gazeX = df['Gaze point X [MCS px]']
-    gazeY = df['Gaze point Y [MCS px]']
+    col0_name = list(df)[0]
+    if col0_name == 'Recording timestamp [ms]':
+        df.dropna(subset=['Recording timestamp [ms]', 'Gaze point X [MCS px]', 'Gaze point Y [MCS px]'], inplace = True)
+        timestamp = df['Recording timestamp [ms]']
+        gazeX = df['Gaze point X [MCS px]']
+        gazeY = df['Gaze point Y [MCS px]']
+    elif col0_name == 'Recording timestamp':
+        df.dropna(subset=['Recording timestamp', 'Gaze point X', 'Gaze point Y'], inplace = True)
+        timestamp = df['Recording timestamp']
+        gazeX = df['Gaze point X']
+        gazeY = df['Gaze point Y']
 
     timestamp = np.array(timestamp)
     #获得输入数据,数据归一化
@@ -868,12 +917,12 @@ print(model.weights_)
 # print("state_sequence1")
 # print(state_sequence1) #预测第1个人最可能的隐藏状态
 # np.savetxt('out/state_sequence1.txt', state_sequence1, fmt="%.3f", delimiter=',') #保存为3位小数的浮点数，用逗号分隔
-sequence_sum=[]
+sequence_sum = []
 #按照timestamp,AOI的形式打印
 for i in range(len(filename_list)):
     Sequence = model.predict(np.array(X_sum[i]), lengths=None)
     timestamp_AOI = np.column_stack([timestamp_sum[i], Sequence])
-    out_file_name = 'out/'+filename_list[i]+'.txt'
+    out_file_name = 'out/' + question_name + '/' + filename_list[i]+'.txt'
     np.savetxt(out_file_name, timestamp_AOI, fmt="%d", delimiter=',')
     sequence_sum.append(Sequence)
 #
