@@ -1,3 +1,4 @@
+#初始化的GMM得到概率作为朱老师算法输入
 import datetime
 import pickle
 from point import *
@@ -149,7 +150,7 @@ def make_ellipses(str, mean, cov, ax, confidence=5.991, alpha=0.3, color="blue",
 
 #从“AOI划分像素点表”文件读取数据并赋值
 def load_AOI_pixel_excel(file_path):
-    col_size = 25
+    col_size = 29
     print("begin reading eye tracker data of ", file_path)
     eyeTrack_dict = {}
     with open(file_path, "r", encoding="utf8", errors="ignore") as file:
