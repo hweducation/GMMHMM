@@ -20,11 +20,11 @@ from matplotlib import cm, pyplot as plt
 from hmmlearn.hmm import *
 from sklearn.mixture import GaussianMixture
 
-component_num = 7 #隐藏状态数目
-mix_num = 4
+component_num = 13 #隐藏状态数目
+mix_num = 2
 iter_num = 100
 for_num = 1
-question_name = 'hou_shu_04'
+question_name = 'mid_shu_02'
 in_background_file = 'background/'+question_name+'.jpg'
 
 #将拟合后的均值画在原始背景图上面，设置一些路径等参数
@@ -78,11 +78,24 @@ def in_which_AOI2(x, y):  # Statement合并
     elif x >= optionD_LU.x and x <= optionD_RB.x and y >= optionD_LU.y and y <= optionD_RB.y:
         return 4
     elif x >= time_LU.x and x <= time_RB.x and y >= time_LU.y and y <= time_RB.y:
-        return 6
-    elif x >= stament_LU.x and x <= stament_RB.x and y >= stament_LU.y and y <= stament_RB.y:
         return 5
-    else:
+
+    elif x >= s1_LU.x and x <= s1_RB.x and y >= s1_LU.y and y <= s1_RB.y:
+        return 6
+    elif x >= s2_LU.x and x <= s2_RB.x and y >= s2_LU.y and y <= s2_RB.y:
         return 7
+    elif x >= s3_LU.x and x <= s3_RB.x and y >= s3_LU.y and y <= s3_RB.y:
+        return 8
+    elif x >= s4_LU.x and x <= s4_RB.x and y >= s4_LU.y and y <= s4_RB.y:
+        return 9
+    elif x >= s5_LU.x and x <= s5_RB.x and y >= s5_LU.y and y <= s5_RB.y:
+        return 10
+    elif x >= s6_LU.x and x <= s6_RB.x and y >= s6_LU.y and y <= s6_RB.y:
+        return 11
+    elif x >= s7_LU.x and x <= s7_RB.x and y >= s7_LU.y and y <= s7_RB.y:
+        return 12
+    else:
+        return 13
 
 def to_edge(x, y, index):  # 将跑出AOI的点归到边缘
     x = x * width
@@ -222,7 +235,7 @@ def make_ellipses(str, mean, cov, ax, confidence=5.991, alpha=0.3, color="blue",
 
 #从“AOI划分像素点表”文件读取数据并赋值
 def load_AOI_pixel_excel(file_path):
-    col_size = 29
+    col_size = 101 #29
     print("begin reading eye tracker data of ", file_path)
     with open(file_path, "r", encoding="utf8", errors="ignore") as file:
         for i, line in enumerate(file.readlines()):
@@ -238,9 +251,6 @@ def load_AOI_pixel_excel(file_path):
                         s1_LU, s1_RB, s2_LU, s2_RB, s3_LU, s3_RB, s4_LU, s4_RB, s5_LU, s5_RB, s6_LU, s6_RB, s7_LU, s7_RB, \
                         o1_LU, o1_RB, o2_LU, o2_RB, o3_LU, o3_RB, o4_LU, o4_RB, o5_LU, o5_RB, o6_LU, o6_RB, o7_LU, o7_RB, \
                         o8_LU, o8_RB, o9_LU, o9_RB, o10_LU, o10_RB, o11_LU, o11_RB
-
-
-
 
                     for k in range(len(split)):
                         #第一个是题目名字，转不成int
@@ -267,27 +277,27 @@ def load_AOI_pixel_excel(file_path):
 
                     time_LU = point(split[25], split[26])
                     time_RB = point(split[27], split[28])
-                    #
-                    # s1_LU = point(split[29], split[30])
-                    # s1_RB = point(split[31], split[32])
-                    #
-                    # s2_LU = point(split[33], split[34])
-                    # s2_RB = point(split[35], split[36])
-                    #
-                    # s3_LU = point(split[37], split[38])
-                    # s3_RB = point(split[39], split[40])
-                    #
-                    # s4_LU = point(split[41], split[42])
-                    # s4_RB = point(split[43], split[44])
-                    #
-                    # s5_LU = point(split[45], split[46])
-                    # s5_RB = point(split[47], split[48])
-                    #
-                    # s6_LU = point(split[49], split[50])
-                    # s6_RB = point(split[51], split[52])
-                    #
-                    # s7_LU = point(split[53], split[54])
-                    # s7_RB = point(split[55], split[56])
+
+                    s1_LU = point(split[29], split[30])
+                    s1_RB = point(split[31], split[32])
+
+                    s2_LU = point(split[33], split[34])
+                    s2_RB = point(split[35], split[36])
+
+                    s3_LU = point(split[37], split[38])
+                    s3_RB = point(split[39], split[40])
+
+                    s4_LU = point(split[41], split[42])
+                    s4_RB = point(split[43], split[44])
+
+                    s5_LU = point(split[45], split[46])
+                    s5_RB = point(split[47], split[48])
+
+                    s6_LU = point(split[49], split[50])
+                    s6_RB = point(split[51], split[52])
+
+                    s7_LU = point(split[53], split[54])
+                    s7_RB = point(split[55], split[56])
                     #
                     # o1_LU = point(split[57], split[58])
                     # o1_RB = point(split[59], split[60])
@@ -357,6 +367,13 @@ X3 = []
 X4 = []
 X5 = []
 X6 = []
+
+X7 = []
+X8 = []
+X9 = []
+X10 = []
+X11 = []
+X12 = []
 for filename in filename_list:
     in_dir = 'E://read-allquestion/'+question_name+'/'+filename+'.tsv'
     print("in_dir")
@@ -421,6 +438,21 @@ for filename in filename_list:
             X5.append(element)
         elif in_which_AOI2(element[0],element[1])==6:
             X6.append(element)
+
+        elif in_which_AOI2(element[0], element[1]) == 7:
+            X7.append(element)
+        elif in_which_AOI2(element[0], element[1]) == 8:
+            X8.append(element)
+        elif in_which_AOI2(element[0], element[1]) == 9:
+            X9.append(element)
+        elif in_which_AOI2(element[0], element[1]) == 10:
+            X10.append(element)
+        elif in_which_AOI2(element[0], element[1]) == 11:
+            X11.append(element)
+        elif in_which_AOI2(element[0], element[1]) == 12:
+            X12.append(element)
+        # elif in_which_AOI2(element[0], element[1]) == 13:
+        #     X13.append(element)
     # cov_X6 = np.cov(X6.T)
     # print("协方差X6")
     # print(cov_X6)
@@ -483,6 +515,12 @@ X4 = np.array(X4)
 X5 = np.array(X5)
 X6 = np.array(X6)
 
+X7 = np.array(X7)
+X8 = np.array(X8)
+X9 = np.array(X9)
+X10 = np.array(X10)
+X11 = np.array(X11)
+X12 = np.array(X12)
 # print("X0")
 # print(X0)
 # print("X1")
@@ -702,9 +740,102 @@ print(cov_X6)
 print("mean_X6")
 print(mean_X6)
 
-pre_means_ = [mean_X0, mean_X1, mean_X2, mean_X3, mean_X4, mean_X5, mean_X6]  #
-pre_covs_ = [cov_X0, cov_X1, cov_X2, cov_X3, cov_X4, cov_X5, cov_X6]  #
-pre_weight_ = [weight_X0, weight_X1, weight_X2, weight_X3, weight_X4, weight_X5, weight_X6]
+gm7 = GaussianMixture(n_components=mix_num, random_state=0, covariance_type='full').fit(X7)#, covariance_type='full'
+print("gm7.means_")
+print(gm7.means_)
+mean_X7 = gm7.means_
+cov_X7 = gm7.covariances_
+weight_X7 = gm7.weights_
+print("mean_X7")
+print(mean_X7)
+print("cov_X7")
+print(cov_X7)
+print("mean_X7")
+print(mean_X7)
+
+gm8 = GaussianMixture(n_components=mix_num, random_state=0, covariance_type='full').fit(X8)#, covariance_type='full'
+print("gm8.means_")
+print(gm8.means_)
+mean_X8 = gm8.means_
+cov_X8 = gm8.covariances_
+weight_X8 = gm8.weights_
+print("mean_X8")
+print(mean_X8)
+print("cov_X8")
+print(cov_X8)
+print("mean_X8")
+print(mean_X8)
+
+
+gm9 = GaussianMixture(n_components=mix_num, random_state=0, covariance_type='full').fit(X9)#, covariance_type='full'
+print("gm9.means_")
+print(gm9.means_)
+mean_X9 = gm9.means_
+cov_X9 = gm9.covariances_
+weight_X9 = gm9.weights_
+print("mean_X9")
+print(mean_X9)
+print("cov_X9")
+print(cov_X9)
+print("mean_X9")
+print(mean_X9)
+
+gm10 = GaussianMixture(n_components=mix_num, random_state=0, covariance_type='full').fit(X10)#, covariance_type='full'
+print("gm10.means_")
+print(gm10.means_)
+mean_X10 = gm10.means_
+cov_X10 = gm10.covariances_
+weight_X10 = gm10.weights_
+print("mean_X10")
+print(mean_X10)
+print("cov_X10")
+print(cov_X10)
+print("mean_X10")
+print(mean_X10)
+
+gm11 = GaussianMixture(n_components=mix_num, random_state=0, covariance_type='full').fit(X11)#, covariance_type='full'
+print("gm11.means_")
+print(gm11.means_)
+mean_X11 = gm11.means_
+cov_X11 = gm11.covariances_
+weight_X11 = gm11.weights_
+print("mean_X11")
+print(mean_X11)
+print("cov_X11")
+print(cov_X11)
+print("mean_X11")
+print(mean_X11)
+
+gm12 = GaussianMixture(n_components=mix_num, random_state=0, covariance_type='full').fit(X12)#, covariance_type='full'
+print("gm12.means_")
+print(gm12.means_)
+mean_X12 = gm12.means_
+cov_X12 = gm12.covariances_
+weight_X12 = gm12.weights_
+print("mean_X12")
+print(mean_X12)
+print("cov_X12")
+print(cov_X12)
+print("mean_X12")
+print(mean_X12)
+
+# gm13 = GaussianMixture(n_components=mix_num, random_state=0, covariance_type='full').fit(X13)#, covariance_type='full'
+# print("gm13.means_")
+# print(gm13.means_)
+# mean_X13 = gm13.means_
+# cov_X13 = gm13.covariances_
+# weight_X13 = gm13.weights_
+# print("mean_X13")
+# print(mean_X13)
+# print("cov_X13")
+# print(cov_X13)
+# print("mean_X13")
+# print(mean_X13)
+
+
+pre_means_ = [mean_X0, mean_X1, mean_X2, mean_X3, mean_X4, mean_X5,mean_X6,mean_X7, mean_X8, mean_X9, mean_X10, mean_X11, mean_X12]  #
+pre_covs_ = [cov_X0, cov_X1, cov_X2, cov_X3, cov_X4, cov_X5, cov_X6, cov_X7, cov_X8, cov_X9, cov_X10, cov_X11, cov_X12]  #cov_X5,
+pre_weight_ = [weight_X0, weight_X1, weight_X2, weight_X3, weight_X4, weight_X5, weight_X6, weight_X7, weight_X8, weight_X9, weight_X10, weight_X11, weight_X12]#weight_X5,
 pre_means_ = np.array(pre_means_)
 pre_weight_ = np.array(pre_weight_)
 pre_covs_ = np.array(pre_covs_)
@@ -1063,7 +1194,8 @@ for i in range(len(filename_list)):
 #将点打印在图上面，每个状态一个颜色
 # colors = ["blue","black","brown","red","yellow","green","orange","beige","turquoise","pink"]
 #蓝，绿，红
-colors = [(255,0,0),(0,255,0),(0,0,255),(0,255,255),(255,0,255),(255,255,0),(125,0,255),(128,128,0),(0,30,80)]
+colors = [(255,0,0),(0,255,0),(0,0,255),(0,255,255),(255,0,255),(255,255,0),(125,0,255),(128,128,0),(0,30,80),
+          (66,0,0),(0,66,0),(0,0,66),(0,255,66),(66,0,66),(66,66,0),(66,0,66),(66,66,0),(0,66,80)]
 #每个人的数据
 for i in range(len(X_sum)):
     #每个人序列的xy坐标
