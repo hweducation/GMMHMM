@@ -1,3 +1,9 @@
+#输入文件是TObii pro直接导出的文件
+# in_dir = 'E://read-allquestion/'+question_name+'/'+filename+'.tsv'
+#输出文件是Timesample_AOI的格式
+# 'out/' + question_name + '/' + filename_list[i]+'.txt'
+#
+
 import datetime
 import pickle
 
@@ -18,9 +24,9 @@ component_num = 7 #隐藏状态数目
 mix_num = 4
 iter_num = 100
 for_num = 1
-question_name = 'mid_shu_04'
+question_name = 'hou_shu_04'
 in_background_file = 'background/'+question_name+'.jpg'
-in_AOI_point = 'AOI_pixel'
+
 #将拟合后的均值画在原始背景图上面，设置一些路径等参数
 # target_file = 'out/'+filename+'.png'
 target_file1 = 'out/filemeansGMM-new9.png'
@@ -228,7 +234,13 @@ def load_AOI_pixel_excel(file_path):
             else:
                 if split[0] == question_name:
                     global diagram_LU, diagram_RB, optionA_LU, optionA_RB, optionB_LU, optionB_RB, \
-                        optionC_LU, optionC_RB, optionD_LU, optionD_RB, stament_LU, stament_RB, time_LU, time_RB
+                        optionC_LU, optionC_RB, optionD_LU, optionD_RB, stament_LU, stament_RB, time_LU, time_RB, \
+                        s1_LU, s1_RB, s2_LU, s2_RB, s3_LU, s3_RB, s4_LU, s4_RB, s5_LU, s5_RB, s6_LU, s6_RB, s7_LU, s7_RB, \
+                        o1_LU, o1_RB, o2_LU, o2_RB, o3_LU, o3_RB, o4_LU, o4_RB, o5_LU, o5_RB, o6_LU, o6_RB, o7_LU, o7_RB, \
+                        o8_LU, o8_RB, o9_LU, o9_RB, o10_LU, o10_RB, o11_LU, o11_RB
+
+
+
 
                     for k in range(len(split)):
                         #第一个是题目名字，转不成int
@@ -255,6 +267,60 @@ def load_AOI_pixel_excel(file_path):
 
                     time_LU = point(split[25], split[26])
                     time_RB = point(split[27], split[28])
+                    #
+                    # s1_LU = point(split[29], split[30])
+                    # s1_RB = point(split[31], split[32])
+                    #
+                    # s2_LU = point(split[33], split[34])
+                    # s2_RB = point(split[35], split[36])
+                    #
+                    # s3_LU = point(split[37], split[38])
+                    # s3_RB = point(split[39], split[40])
+                    #
+                    # s4_LU = point(split[41], split[42])
+                    # s4_RB = point(split[43], split[44])
+                    #
+                    # s5_LU = point(split[45], split[46])
+                    # s5_RB = point(split[47], split[48])
+                    #
+                    # s6_LU = point(split[49], split[50])
+                    # s6_RB = point(split[51], split[52])
+                    #
+                    # s7_LU = point(split[53], split[54])
+                    # s7_RB = point(split[55], split[56])
+                    #
+                    # o1_LU = point(split[57], split[58])
+                    # o1_RB = point(split[59], split[60])
+                    #
+                    # o2_LU = point(split[61], split[62])
+                    # o2_RB = point(split[63], split[64])
+                    #
+                    # o3_LU = point(split[65], split[66])
+                    # o3_RB = point(split[67], split[68])
+                    #
+                    # o4_LU = point(split[69], split[70])
+                    # o4_RB = point(split[71], split[72])
+                    #
+                    # o5_LU = point(split[73], split[74])
+                    # o5_RB = point(split[75], split[76])
+                    #
+                    # o6_LU = point(split[77], split[78])
+                    # o6_RB = point(split[79], split[80])
+                    #
+                    # o7_LU = point(split[81], split[82])
+                    # o7_RB = point(split[83], split[84])
+                    #
+                    # o8_LU = point(split[85], split[86])
+                    # o8_RB = point(split[87], split[88])
+                    #
+                    # o9_LU = point(split[89], split[90])
+                    # o9_RB = point(split[91], split[92])
+                    #
+                    # o10_LU = point(split[93], split[94])
+                    # o10_RB = point(split[95], split[96])
+                    #
+                    # o11_LU = point(split[97], split[98])
+                    # o11_RB = point(split[99], split[100])
     return None
 
 load_AOI_pixel_excel('AOI_pixel.csv')
@@ -267,7 +333,15 @@ imgini = cv2.resize(orin_img, (width, height))
 filename_list = ['Project63-57 Recording23','Project63-57 Recording24','Project63-57 Recording28',
           'Project63-57 Recording30','Project63-57 Recording32','Project63-57 Recording63',
           'Project77-70 Recording18','Project77-70 Recording25','Project77-70 Recording26',
-          'Project77-70 Recording31','Project77-70 Recording46','Project77-70 Recording70']
+          'Project77-70 Recording31','Project77-70 Recording46','Project77-70 Recording70',
+
+         'Project48-39 Recording19','Project48-39 Recording34','Project48-39 Recording45',
+         'Project48-39 Recording47','Project48-39 Recording52','Project48-39 Recording71',
+         'Project77_56-49 Recording20','Project77_56-49 Recording27','Project77_56-49 Recording33',
+         'Project77_56-49 Recording35'
+         ]
+#
+
 # filename_list = ['Project77-70 Recording46', 'Project77-70 Recording70']
 X_sum = []#三维
 X_all = []#二维
@@ -688,7 +762,7 @@ print(lengths)
 model = GMMHMM(n_components=component_num, n_mix=mix_num, covariance_type='full', n_iter = iter_num, params='st', verbose=True, init_params='st') #'stmcw'
 
 #给一个初值
-model.means_ =pre_means_  #赋值初始均值矩阵???
+model.means_ = pre_means_  #赋值初始均值矩阵???
 model.covars_ = pre_covs_
 model.weights_ = pre_weight_
 #model.covars_ = pre_covs_
