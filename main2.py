@@ -24,7 +24,7 @@ component_num = 7 #隐藏状态数目
 mix_num = 4
 iter_num = 100
 for_num = 1
-question_name = 'hou_shu_04'
+question_name = 'hou_shu_01'
 in_background_file = 'background/'+question_name+'.jpg'
 
 #将拟合后的均值画在原始背景图上面，设置一些路径等参数
@@ -712,9 +712,12 @@ pre_covs_ = np.array(pre_covs_)
 print("pre_means_")
 print(pre_means_)
 
-
 print("pre_covs_")
 print(pre_covs_)
+
+
+print("pre_weight_")
+print(pre_weight_)
 #看一下初始值 高斯混合输出图片
 for i in range(component_num):
     for j in range(mix_num):
@@ -731,11 +734,17 @@ ax.set_xlabel("x")
 ax.set_ylabel("y")
 ax.grid(color='r', ls='dashed', lw=0.5, alpha=0.5) # 设置网格
 confidence = 5.991
-color = "red"
 alpha = 0.3
 eigv = True
+plt.gca().invert_yaxis()
 for i in range(component_num):
     for j in range(mix_num):
+        color=(0,0,0,0)
+        if pre_weight_[i][j]*2<1:
+            color = (1,0,0,pre_weight_[i][j]*2)
+        else:
+            color = (1,0,0,1)
+        #print(pre_weight_[i][j])
         make_ellipses(str(i)+str(j), pre_means_[i][j], pre_covs_[i][j], ax, confidence=confidence, color=color, alpha=alpha, eigv=eigv)
 
 plt.savefig(cov_ini_file)
@@ -869,7 +878,6 @@ for i in range(component_num):
         cv2.putText(img, str(i)+str(j), (int(model.means_[i][j][0]*width), int(model.means_[i][j][1]*height)), cv2.FONT_ITALIC, 0.9, (210, 50, 220), 2, cv2.LINE_AA)
 cv2.imwrite(target_file1, img)
 
-
 # # 单高斯输出图片
 # for i in range(component_num):
 #     #x_y = (model.means_[i][0], model.means_[i][1])
@@ -896,8 +904,9 @@ cv2.imwrite(target_file1, img)
 # print(model.means_)
 # print("协方差矩阵")
 # print(model.covars_)
-# print("状态转移矩阵--A")
-# print(model.transmat_)
+print("状态转移矩阵--A")
+print(model.transmat_)
+
 #
 #
 # #拟合观测序列
@@ -968,8 +977,14 @@ confidence = 5.991
 color = "blue"
 alpha = 0.3
 eigv = True
+plt.gca().invert_yaxis()
 for i in range(component_num):
     for j in range(mix_num):
+        color=(0,0,0,0)
+        if pre_weight_[i][j]*2<1:
+            color = (0,0,1,pre_weight_[i][j]*2)
+        else:
+            color = (0,0,1,1)
         make_ellipses(str(i)+str(j), model.means_[i][j], model.covars_[i][j], ax, confidence=confidence, color=color, alpha=alpha, eigv=eigv)
 
 plt.savefig(cov_file)
@@ -978,6 +993,11 @@ plt.savefig(cov_file)
 
 print("model.transmat_")
 print(model.transmat_)
+
+transmat = np.column_stack(model.transmat_)
+out_transmat_file_name = 'out/' + question_name + '/trans.csv'
+np.savetxt(out_transmat_file_name, transmat, fmt="%.3f", delimiter=',')
+
 print("model.weights_")
 print(model.weights_)
 
