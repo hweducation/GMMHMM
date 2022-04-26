@@ -24,7 +24,7 @@ component_num = 7 #隐藏状态数目
 mix_num = 4
 iter_num = 100
 for_num = 1
-question_name = 'hou_shu_04'
+question_name = 'mid_shu_02'
 in_background_file = 'background/'+question_name+'.jpg'
 
 #将拟合后的均值画在原始背景图上面，设置一些路径等参数
@@ -1091,12 +1091,13 @@ for i in range(len(X_sum)):
         #状态值
         s = sequence_sum[i][j]
 
-        #print(soc)
-        if s == 0:
-            #画点
-            #1=model.weights_[4][0]*model.covars_
-            cv2.circle(img=img, center=(int(X_sum[i][j][0]*width), int(X_sum[i][j][1]*height)), radius=5, color=colors[s])
-        #cv2.circle(img=img, center=(int(X_sum[i][j][0]*width), int(X_sum[i][j][1]*height)), radius=4, color=colors[s])
+        # #print(soc)
+        # if s == 0:
+        #     #画点
+        #     #1=model.weights_[4][0]*model.covars_
+        #     cv2.circle(img=img, center=(int(X_sum[i][j][0]*width), int(X_sum[i][j][1]*height)), radius=5, color=colors[s])
+        #
+        cv2.circle(img=img, center=(int(X_sum[i][j][0]*width), int(X_sum[i][j][1]*height)), radius=4, color=colors[s])
 
 cv2.imwrite(target_file1, img)
 
