@@ -30,9 +30,10 @@ in_background_file = 'background/'+question_name+'.jpg'
 #将拟合后的均值画在原始背景图上面，设置一些路径等参数
 # target_file = 'out/'+filename+'.png'
 target_file1 = 'out/filemeansGMM-new9.png'
-ini_file = 'out/inifilemeansGMM.png'
-cov_ini_file = 'out/init_gaussian_covariance_matrix.png'
-cov_file = 'out/gaussian_covariance_matrix.png'
+ini_file = 'out/inifilemeansGMM.png'#初始的均值图片
+cov_ini_file = 'out/init_gaussian_covariance_matrix.png'#初始的协方差图片
+cov_file = 'out/gaussian_covariance_matrix.png'#迭代后的协方差
+
 modle_file = 'out/hmmmodel.pkl'
 
 #数学后测1
@@ -335,12 +336,14 @@ filename_list = ['Project63-57 Recording23','Project63-57 Recording24','Project6
           'Project77-70 Recording18','Project77-70 Recording25','Project77-70 Recording26',
           'Project77-70 Recording31','Project77-70 Recording46','Project77-70 Recording70',
 
-         'Project48-39 Recording19','Project48-39 Recording34','Project48-39 Recording45',
+         'Project48-39 Recording34','Project48-39 Recording45',
          'Project48-39 Recording47','Project48-39 Recording52','Project48-39 Recording71',
-         'Project77_56-49 Recording20','Project77_56-49 Recording27','Project77_56-49 Recording33',
+         'Project77_56-49 Recording27',
          'Project77_56-49 Recording35'
          ]
-#
+#'Project48-39 Recording19', 'Project77_56-49 Recording20',
+# 'Project77_56-49 Recording33',
+
 
 # filename_list = ['Project77-70 Recording46', 'Project77-70 Recording70']
 X_sum = []#三维
@@ -482,7 +485,7 @@ X3 = np.array(X3)
 X4 = np.array(X4)
 X5 = np.array(X5)
 X6 = np.array(X6)
-
+#初始点落入事先划分的AOI中
 # print("X0")
 # print(X0)
 # print("X1")
@@ -512,6 +515,7 @@ X6 = np.array(X6)
 # diagram2 = [diagramx2,diagramy2]
 # diagram3 = [diagramx3,diagramy3]
 # mean_X0 = [diagram1,diagram2,diagram3]
+#定义初始的高斯混合模型
 gm0 = GaussianMixture(n_components=mix_num, random_state=0, covariance_type='full').fit(X0)#,covariance_type='full'
 print("gm0.means_")
 print(gm0.means_)
@@ -701,7 +705,7 @@ print("cov_X6")
 print(cov_X6)
 print("mean_X6")
 print(mean_X6)
-
+#GMMHMM初始值
 pre_means_ = [mean_X0, mean_X1, mean_X2, mean_X3, mean_X4, mean_X5, mean_X6]  #
 pre_covs_ = [cov_X0, cov_X1, cov_X2, cov_X3, cov_X4, cov_X5, cov_X6]  #
 pre_weight_ = [weight_X0, weight_X1, weight_X2, weight_X3, weight_X4, weight_X5, weight_X6]
@@ -768,7 +772,7 @@ print(lengths)
 #
 # print("X_sum")
 # print(X_sum)
-model = GMMHMM(n_components=component_num, n_mix=mix_num, covariance_type='full', n_iter = iter_num, params='st', verbose=True, init_params='st') #'stmcw'
+model = GMMHMM(n_components=component_num, n_mix=mix_num, covariance_type='full', n_iter = iter_num, params='stmcw', verbose=True, init_params='st') #'stmcw'
 
 #给一个初值
 model.means_ = pre_means_  #赋值初始均值矩阵???
@@ -1098,8 +1102,8 @@ for i in range(len(X_sum)):
         #     cv2.circle(img=img, center=(int(X_sum[i][j][0]*width), int(X_sum[i][j][1]*height)), radius=5, color=colors[s])
         #
         cv2.circle(img=img, center=(int(X_sum[i][j][0]*width), int(X_sum[i][j][1]*height)), radius=4, color=colors[s])
-
-cv2.imwrite(target_file1, img)
+#不画每个人五颜六色的眼动数据
+#cv2.imwrite(target_file1, img)
 
 
 
