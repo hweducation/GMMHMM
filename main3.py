@@ -162,6 +162,12 @@ def load_AOI_pixel_excel(file_path):
                 if split[0] == question_name:
                     global diagram_LU, diagram_RB, optionA_LU, optionA_RB, optionB_LU, optionB_RB, \
                         optionC_LU, optionC_RB, optionD_LU, optionD_RB, stament_LU, stament_RB, time_LU, time_RB
+
+                    for k in range(len(split)):
+                        #第一个是题目名字，转不成int
+                        if k != 0:
+                            split[k] = int(split[k])
+
                     diagram_LU = point(split[1], split[2])
                     diagram_RB = point(split[3], split[4])
 
@@ -446,4 +452,4 @@ print(AOI_distribute)
 
 #将AOI_distribute输入到文档里面作为朱老师算法输入
 for i in range(len(AOI_distribute)):
-    np.savetxt('out/'+filename_list[i]+'.txt', AOI_distribute[i], fmt="%.3f", delimiter=',')
+    np.savetxt('out/'+filename_list[i]+'.csv', AOI_distribute[i], fmt="%.3f", delimiter=',')
